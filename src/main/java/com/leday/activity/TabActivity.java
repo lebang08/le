@@ -65,9 +65,6 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
         if (!NetUtil.isConnected(TabActivity.this)) {
             ToastUtil.showMessage(TabActivity.this, "亲，你没有连接网络哦");
         }
-//        if(!NetUtil.isWifi(TabActivity.this)){
-//            ToastUtil.showMessage(TabActivity.this, "亲，你不在WIFI网络哦");
-//        }
     }
 
     private void initView() {
