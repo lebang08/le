@@ -74,6 +74,7 @@ public class SplashActivity extends Activity implements View.OnClickListener {
     public void onClick(View view) {
         mTimer.cancel();
         startActivity(new Intent(SplashActivity.this, TabActivity.class));
+        this.finish();
     }
 
 }
