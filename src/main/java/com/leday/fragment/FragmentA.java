@@ -2,6 +2,7 @@ package com.leday.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.leday.Impl.ListViewHightImpl;
 import com.leday.R;
 import com.leday.Util.LogUtil;
+import com.leday.activity.NoteActivity;
 import com.leday.activity.TodayActivity;
 import com.leday.application.MyApplication;
 import com.leday.entity.Today;
@@ -29,7 +31,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class FragmentA extends Fragment implements AdapterView.OnItemClickListener {
+public class FragmentA extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+
+    private FloatingActionButton mFtn;
 
     private ListView mListView;
     private List<String> mDataList = new ArrayList<>();
@@ -54,8 +58,10 @@ public class FragmentA extends Fragment implements AdapterView.OnItemClickListen
     }
 
     private void initView(View view) {
-        mListView = (ListView) view.findViewById(R.id.listview_fragment_a);
+        mFtn = (FloatingActionButton) view.findViewById(R.id.fab_fragment_a);
+        mFtn.setOnClickListener(this);
 
+        mListView = (ListView) view.findViewById(R.id.listview_fragment_a);
         mListView.setOnItemClickListener(this);
     }
 
@@ -116,5 +122,10 @@ public class FragmentA extends Fragment implements AdapterView.OnItemClickListen
         intent.putExtra("local_title", mTodayList.get(position).getTitle());
         intent.putExtra("local_date", mTodayList.get(position).getDate());
         startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        startActivity(new Intent(getActivity(), NoteActivity.class));
     }
 }

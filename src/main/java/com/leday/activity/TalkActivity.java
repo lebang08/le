@@ -86,7 +86,7 @@ public class TalkActivity extends BaseActivity {
         //是否第一次进入聊天，是则欢迎，不是则聊天记录
         boolean b = PreferenUtil.contains(TalkActivity.this, "mDatabase");
         if (!b) {
-            mDatas.add(new Talk("客官，您好，我是挨骂替身小图灵", Talk.Type.INCOMING, new Date()));
+            mDatas.add(new Talk("客官，您好，我是百事通小图灵", Talk.Type.INCOMING, new Date()));
             mAdapter = new TalkAdapter(this, mDatas);
             mListView.setAdapter(mAdapter);
         } else {

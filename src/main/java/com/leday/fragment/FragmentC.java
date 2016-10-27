@@ -2,6 +2,7 @@ package com.leday.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.leday.Impl.ListViewHightImpl;
 import com.leday.R;
 import com.leday.Util.LogUtil;
+import com.leday.activity.NoteActivity;
 import com.leday.activity.WebViewActivity;
 import com.leday.adapter.WechatAdapter;
 import com.leday.application.MyApplication;
@@ -27,7 +29,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentC extends android.support.v4.app.Fragment implements AdapterView.OnItemClickListener {
+public class FragmentC extends android.support.v4.app.Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+
+    private FloatingActionButton mFtn;
 
     private ListView mListView;
     private List<Wechat> wechatList = new ArrayList<>();
@@ -49,8 +53,10 @@ public class FragmentC extends android.support.v4.app.Fragment implements Adapte
     }
 
     private void initView(View view) {
-        mListView = (ListView) view.findViewById(R.id.listview_fragment_c);
+        mFtn = (FloatingActionButton) view.findViewById(R.id.fab_fragment_c);
+        mFtn.setOnClickListener(this);
 
+        mListView = (ListView) view.findViewById(R.id.listview_fragment_c);
         mListView.setOnItemClickListener(this);
     }
 
@@ -104,5 +110,10 @@ public class FragmentC extends android.support.v4.app.Fragment implements Adapte
         intent.putExtra("localurl", wechatList.get(position).getUrl());
         intent.putExtra("localtitle", wechatList.get(position).getTitle());
         startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        startActivity(new Intent(getActivity(), NoteActivity.class));
     }
 }

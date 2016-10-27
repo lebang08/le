@@ -3,7 +3,6 @@ package com.leday.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,7 @@ import android.widget.ListView;
 
 import com.leday.Impl.ListViewHightImpl;
 import com.leday.R;
+import com.leday.activity.NoteActivity;
 import com.leday.activity.StarActivity;
 import com.leday.adapter.StarAdapter;
 
@@ -117,6 +117,6 @@ public class FragmentB extends Fragment implements AdapterView.OnItemClickListen
 
     @Override
     public void onClick(View v) {
-        Snackbar.make(v, "友情提醒：命运是可以改变的!", Snackbar.LENGTH_LONG).show();
+        startActivity(new Intent(getActivity(),NoteActivity.class));
     }
 }

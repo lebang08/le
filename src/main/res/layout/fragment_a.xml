@@ -63,4 +63,15 @@
 
     </android.support.v4.widget.NestedScrollView>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_fragment_a"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_dialog_dialer"
+        app:backgroundTint="#3f51b5"
+        app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="bottom|end"
+        app:rippleColor="#ff8dff" />
+
 </android.support.design.widget.CoordinatorLayout>

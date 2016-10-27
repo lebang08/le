@@ -21,6 +21,7 @@ import com.leday.Util.PreferenUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
 import com.leday.activity.FavoriteActivity;
+import com.leday.activity.NoteActivity;
 import com.leday.activity.TalkActivity;
 import com.leday.activity.WebFavoriteActivity;
 
@@ -46,6 +47,7 @@ public class FragmentD extends Fragment implements AdapterView.OnItemClickListen
     }
 
     private void initData() {
+        mData.add("我的记事本");
         mData.add("图灵问答机器人");
         mData.add("今时今往收藏");
         mData.add("微信微选收藏");
@@ -94,15 +96,18 @@ public class FragmentD extends Fragment implements AdapterView.OnItemClickListen
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case 0:
-                startActivity(new Intent(getActivity(), TalkActivity.class));
+                startActivity(new Intent(getActivity(), NoteActivity.class));
                 break;
             case 1:
-                startActivity(new Intent(getActivity(), FavoriteActivity.class));
+                startActivity(new Intent(getActivity(), TalkActivity.class));
                 break;
             case 2:
-                startActivity(new Intent(getActivity(), WebFavoriteActivity.class));
+                startActivity(new Intent(getActivity(), FavoriteActivity.class));
                 break;
             case 3:
+                startActivity(new Intent(getActivity(), WebFavoriteActivity.class));
+                break;
+            case 4:
                 Snackbar.make(view, "当前版本号是：" + PreferenUtil.get(getActivity(), "localVersion", "1.4"), Snackbar.LENGTH_SHORT)
                         .setActionTextColor(Color.parseColor("#ffffff"))
                         .setAction("点击检查新版本", new View.OnClickListener() {
@@ -112,7 +117,7 @@ public class FragmentD extends Fragment implements AdapterView.OnItemClickListen
                             }
                         }).show();
                 break;
-            case 4:
+            case 5:
                 //打开腾讯QQ
                 boolean isExist = isApkInstalled(getActivity(), "com.tencent.mobileqq");
                 talkQQ(isExist);
