@@ -31,10 +31,8 @@ public class WebFavoriteActivity extends BaseActivity implements AdapterView.OnI
         mDataList.clear();
         mContentList.clear();
         mIdList.clear();
-        mAdapter.notifyDataSetChanged();
         queryDatabase();
-        mAdapter = new ArrayAdapter(WebFavoriteActivity.this, android.R.layout.simple_list_item_1, mDataList);
-        mListView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
         super.onRestart();
     }
 

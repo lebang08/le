@@ -123,6 +123,6 @@ public class NoteDetailActivity extends BaseActivity {
         mValues.clear();
         mDatabase.close();
         PreferenUtil.put(NoteDetailActivity.this, "notetb_is_exist", "actually_not");
-        Snackbar.make(view, "提成便签成功", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(view, "保存便签成功", Snackbar.LENGTH_SHORT).show();
     }
 }

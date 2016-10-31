@@ -10,14 +10,16 @@ public class Today implements Serializable {
     private String date;
     private String e_id;
     private String title;
+    private String content;
 
     public Today() {
     }
 
-    public Today(String day, String date, String e_id, String title) {
+    public Today(String date, String e_id, String title, String content) {
         this.date = date;
         this.e_id = e_id;
         this.title = title;
+        this.content = content;
     }
 
     public String getDate() {
@@ -44,12 +46,21 @@ public class Today implements Serializable {
         this.title = title;
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     @Override
     public String toString() {
         return "Today{" +
-                ", date='" + date + '\'' +
+                "date='" + date + '\'' +
                 ", e_id='" + e_id + '\'' +
                 ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
                 '}';
     }
 }

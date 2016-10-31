@@ -32,14 +32,17 @@
             android:background="@drawable/arrow_white_back"
             android:onClick="doBack" />
 
-        <ImageButton
+        <Button
             android:id="@+id/img_makesure"
-            android:layout_width="24dp"
+            android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_gravity="center_vertical|right"
             android:layout_marginRight="8dp"
-            android:background="@drawable/img_submit"
-            android:onClick="doSubmit" />
+            android:background="#00000000"
+            android:onClick="doSubmit"
+            android:text="保存"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
     </FrameLayout>
 
     <LinearLayout

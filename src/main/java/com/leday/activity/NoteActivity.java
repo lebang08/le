@@ -39,6 +39,7 @@ public class NoteActivity extends BaseActivity implements AdapterView.OnItemClic
         super.onRestart();
         mList.clear();
         initData();
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -47,7 +48,6 @@ public class NoteActivity extends BaseActivity implements AdapterView.OnItemClic
         setContentView(R.layout.activity_note);
 
         initView();
-        initData();
     }
 
     private void initView() {
@@ -55,6 +55,11 @@ public class NoteActivity extends BaseActivity implements AdapterView.OnItemClic
         mListView = (ListView) findViewById(R.id.listview_activity_note);
         mListView.setOnItemClickListener(this);
         mListView.setOnItemLongClickListener(this);
+
+        initData();
+
+        mAdapter = new NoteAdapter(this, mList);
+        mListView.setAdapter(mAdapter);
     }
 
     /**
@@ -80,13 +85,10 @@ public class NoteActivity extends BaseActivity implements AdapterView.OnItemClic
             mCursor.close();
         }
         mDatabase.close();
-
-        mAdapter = new NoteAdapter(this, mList);
-        mListView.setAdapter(mAdapter);
     }
 
     /**
-     * 修改便签
+     * 修改便签风格
      *
      * @param view
      */
@@ -151,8 +153,13 @@ public class NoteActivity extends BaseActivity implements AdapterView.OnItemClic
                         mDatabase.execSQL(local_delete);
                         mDatabase.close();
 
+                        //TODO 解决:删除操作后，刷新列表的position出現错乱Bug
+                        //旧数据清楚
                         mList.clear();
+                        //新数据填充
                         initData();
+                        //适配器 set change
+                        mAdapter.notifyDataSetChanged();
                     }
                 })
                 .setNegativeButton("取消", null)

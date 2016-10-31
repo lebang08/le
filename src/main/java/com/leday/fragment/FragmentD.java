@@ -47,7 +47,7 @@ public class FragmentD extends Fragment implements AdapterView.OnItemClickListen
     }
 
     private void initData() {
-        mData.add("我的记事本");
+        mData.add("我的便签");
         mData.add("图灵问答机器人");
         mData.add("今时今往收藏");
         mData.add("微信微选收藏");

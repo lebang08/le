@@ -49,7 +49,7 @@ public class SplashActivity extends Activity implements View.OnClickListener {
         setContentView(R.layout.activity_splash);
 
         initView();
-        count = 5;
+        count = 2;
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {

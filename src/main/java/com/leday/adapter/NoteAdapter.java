@@ -51,7 +51,7 @@ public class NoteAdapter extends BaseAdapter {
             viewHold = (ViewHold) convertView.getTag();
         }
         viewHold.mTime.setText(mList.get(position).getTime());
-        viewHold.mContent.setText("\r\r\r\r" + mList.get(position).getContent());
+        viewHold.mContent.setText("\r\r\r\r" + mList.get(position).getTitle());
         return convertView;
     }
 

@@ -13,7 +13,7 @@ import com.leday.Util.LogUtil;
 
 public class FavoriteDetailActivity extends BaseActivity implements View.OnClickListener {
 
-    private String local_content, local_title, local_id;
+    private String local_content, local_title, local_id, local_date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +25,9 @@ public class FavoriteDetailActivity extends BaseActivity implements View.OnClick
 
     private void initView() {
         local_content = getIntent().getStringExtra("local_content");
-        local_title = getIntent().getStringExtra("local_date_title");
+        local_title = getIntent().getStringExtra("local_title");
+        local_date = getIntent().getStringExtra("local_date");
         local_id = getIntent().getStringExtra("local_id");
-        LogUtil.e("num = " + local_id + "---" + local_title);
 
         ViewFlipper mViewFlipper = (ViewFlipper) findViewById(R.id.viewflipper_activity_today);
         mViewFlipper.setVisibility(View.GONE);
@@ -36,7 +36,7 @@ public class FavoriteDetailActivity extends BaseActivity implements View.OnClick
         TextView mUnLike = (TextView) findViewById(R.id.txt_Today_like);
         ImageView mBack = (ImageView) findViewById(R.id.img_today_back);
 
-        mTitle.setText(local_title);
+        mTitle.setText(local_date + "\r" + local_title);
         mContent.setText(local_content);
         mUnLike.setText("取消收藏");
 
