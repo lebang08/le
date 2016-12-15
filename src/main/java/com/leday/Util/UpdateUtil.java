@@ -23,7 +23,9 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.android.volley.Request.Method;
+import com.android.volley.Response;
 import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.leday.R;
 import com.leday.application.MyApplication;
@@ -42,13 +44,15 @@ public class UpdateUtil {
     private ProgressBar pb;
     private Dialog mDownLoadDialog;
 
-    private final String URL_SERVE = "http://www.iyuce.com/Scripts/andoird.json";
+    private final String URL_SERVE = "http://www.iyuce.com/Scripts/leday.json";
     private static final int DOWNLOADING = 1;
     private static final int DOWNLOAD_FINISH = 0;
 
     private String mVersion;
-    //    private String mVersionURL;
-    //    private String mMessage;
+    private String mVersionURL;
+    private String mTitle;
+    private String mMessage;
+    private String mNeedFlow;
     private String mSavePath;
     private String mAlreayNew;
     private int mProgress;
@@ -71,15 +75,18 @@ public class UpdateUtil {
             try {
                 String jsonString = (String) msg.obj;
                 String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
-                JSONObject jsonObject;
-                jsonObject = new JSONObject(parseString);
-                int result = jsonObject.getInt("code");
-                if (result == 0) {
-                    JSONArray data = jsonObject.getJSONArray("data");
-                    jsonObject = data.getJSONObject(0);
-                    mVersion = jsonObject.getString("version");
-//                    mVersionURL = jsonObject.getString("apkurl");
-//                    mMessage = jsonObject.getString("detail");
+                JSONObject obj;
+                obj = new JSONObject(parseString);
+                LogUtil.i("obj = " + obj);
+                if (obj.getString("code").equals("0")) {
+                    JSONArray data = obj.getJSONArray("data");
+                    obj = data.getJSONObject(0);
+                    mVersion = obj.getString("version");
+                    mVersionURL = obj.getString("apkurl");
+                    mTitle = obj.getString("title");
+                    mMessage = obj.getString("message");
+                    //耗费的流量
+//                    mNeedFlow = obj.getString("flow");
 //                    LogUtil.e("mVersionURL", "VersionURL = " + mVersionURL);
                 }
 //				LogUtil.e("version", "远程version = " + mVersion);
@@ -87,7 +94,7 @@ public class UpdateUtil {
                     showNoticeDialog();
                 } else {
                     if (!TextUtils.isEmpty(mAlreayNew)) {
-                        ToastUtil.showMessage(mcontext, "已经是最新版本啦");
+                        ToastUtil.showMessage(mcontext, "已经是最新版本v" + mVersion + "啦");
                     }
                 }
             } catch (Exception e) {
@@ -119,7 +126,12 @@ public class UpdateUtil {
                 msg.obj = response;
                 mGetVersionHandler.sendMessage(msg);
             }
-        }, null);
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                LogUtil.i("volleyError = " + volleyError.getMessage());
+            }
+        });
         request.setTag("updateutil");
         MyApplication.getHttpQueue().add(request);
     }
@@ -151,8 +163,8 @@ public class UpdateUtil {
             ToastUtil.showMessage(mcontext, "你当前不在WIFI环境，将耗费4.3M流量下载，建议在WIFI环境下下载哦", 3000);
         }
         AlertDialog.Builder builder = new Builder(mcontext, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-        builder.setTitle("发现新版本");
-        builder.setMessage("小Le又有新版本啦！\n又增加了新功能，赶快更新试试吧！");
+        builder.setTitle(mTitle);
+        builder.setMessage(mMessage);
         builder.setPositiveButton("立刻更新", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -207,7 +219,7 @@ public class UpdateUtil {
                             dir.mkdir();
                         }
 
-                        HttpURLConnection conn = (HttpURLConnection) new URL("http://www.iyuce.com/uploadfiles/app/le.apk").openConnection();
+                        HttpURLConnection conn = (HttpURLConnection) new URL(mVersionURL).openConnection();
                         conn.connect();
                         InputStream is = conn.getInputStream();
                         int length = conn.getContentLength();

@@ -55,7 +55,7 @@
             android:value="579eadc267e58ed31f0009b8" />
         <meta-data
             android:name="UMENG_CHANNEL"
-            android:value="ALL" />
+            android:value="${umeng_channel}" />
     </application>
 
 </manifest>

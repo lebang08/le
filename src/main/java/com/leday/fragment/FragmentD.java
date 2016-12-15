@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.leday.Impl.ListViewHightImpl;
 import com.leday.R;
+import com.leday.Util.LogUtil;
 import com.leday.Util.PreferenUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
@@ -108,7 +109,7 @@ public class FragmentD extends Fragment implements AdapterView.OnItemClickListen
                 startActivity(new Intent(getActivity(), WebFavoriteActivity.class));
                 break;
             case 4:
-                Snackbar.make(view, "当前版本号是：" + PreferenUtil.get(getActivity(), "localVersion", "1.4"), Snackbar.LENGTH_SHORT)
+                Snackbar.make(view, "当前版本号是：" + PreferenUtil.get(getActivity(), "localVersion", "2.6"), Snackbar.LENGTH_SHORT)
                         .setActionTextColor(Color.parseColor("#ffffff"))
                         .setAction("点击检查新版本", new View.OnClickListener() {
                             @Override

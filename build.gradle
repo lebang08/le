@@ -8,13 +8,58 @@ android {
         applicationId "com.leday"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 25
-        versionName "2.5"
+        versionCode 27
+        versionName "2.7"
+        manifestPlaceholders = [
+                umeng_channel: "update"
+        ]
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        Tecent {
+            manifestPlaceholders = [
+                    umeng_channel: "Tecent"
+            ]
+        }
+        Baidu {
+            manifestPlaceholders = [
+                    umeng_channel: "Baidu"
+            ]
+        }
+        xiaomi {
+            manifestPlaceholders = [
+                    umeng_channel: "xiaomi"
+            ]
+        }
+        qihoo {
+            manifestPlaceholders = [
+                    umeng_channel: "360"
+            ]
+        }
+        meizu {
+            manifestPlaceholders = [
+                    umeng_channel: "meizu"
+            ]
+        }
+        Huawei {
+            manifestPlaceholders = [
+                    umeng_channel: "Huawei"
+            ]
+        }
+        Vivo {
+            manifestPlaceholders = [
+                    umeng_channel: "Vivo"
+            ]
+        }
+        Oppo {
+            manifestPlaceholders = [
+                    umeng_channel: "Oppo"
+            ]
         }
     }
 }

@@ -15,6 +15,7 @@ import android.widget.EditText;
 
 import com.leday.R;
 import com.leday.Util.PreferenUtil;
+import com.leday.Util.ToastUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -123,6 +124,6 @@ public class NoteDetailActivity extends BaseActivity {
         mValues.clear();
         mDatabase.close();
         PreferenUtil.put(NoteDetailActivity.this, "notetb_is_exist", "actually_not");
-        Snackbar.make(view, "保存便签成功", Snackbar.LENGTH_SHORT).show();
+        ToastUtil.showMessage(this,"保存便签成功");
     }
 }
