@@ -119,15 +119,18 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void getJson() {
+        progressdialogShow(this);
         StringRequest starRequest = new StringRequest(Request.Method.GET, URL_STAR + localstar + "&type=" + localtime, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 DoSuccess(response);
+                progressCancel();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 LogUtil.e("volleyError = " + volleyError.getMessage());
+                progressCancel();
             }
         });
         starRequest.setTag("staractivity");

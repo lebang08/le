@@ -13,7 +13,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.leday.Impl.ListViewHightImpl;
+import com.leday.View.ListViewHightImpl;
 import com.leday.R;
 import com.leday.Util.LogUtil;
 import com.leday.activity.NoteActivity;
@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentC extends android.support.v4.app.Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class FragmentC extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private FloatingActionButton mFtn;
 
@@ -61,15 +61,18 @@ public class FragmentC extends android.support.v4.app.Fragment implements Adapte
     }
 
     private void initEvent() {
+        progressShow(getActivity());
         StringRequest filmrequest = new StringRequest(Request.Method.GET, URL_WECHAT, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Dosuccess(response);
+                progressCancel();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 LogUtil.e("Wrong-BACK", "联接错误原因： " + error.getMessage());
+                progressCancel();
             }
         });
         filmrequest.setTag("fragmentc");

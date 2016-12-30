@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +14,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.leday.Impl.ListViewHightImpl;
 import com.leday.R;
-import com.leday.Util.LogUtil;
 import com.leday.Util.PreferenUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
+import com.leday.View.ListViewHightImpl;
 import com.leday.activity.FavoriteActivity;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.TalkActivity;
@@ -29,7 +27,7 @@ import com.leday.activity.WebFavoriteActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentD extends Fragment implements AdapterView.OnItemClickListener {
+public class FragmentD extends BaseFragment implements AdapterView.OnItemClickListener {
 
     private ListView mListView;
     private List<String> mData = new ArrayList<>();

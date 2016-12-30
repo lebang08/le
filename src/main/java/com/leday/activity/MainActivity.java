@@ -22,6 +22,7 @@ import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
 
+    //测量屏幕尺寸
     private DisplayMetrics mDisplayMetric;
 
     //用于检测双击退出程序
@@ -109,7 +110,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
      */
     private void initDisplay() {
         mDisplayMetric = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetric);
+        this.getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetric);
         LogUtil.e("屏幕尺寸相关",
                 mDisplayMetric.heightPixels + "," + mDisplayMetric.widthPixels + "。dpi（X和Y是应该是相同的）xdpi= "
                         + mDisplayMetric.xdpi + ",ydpi = " + mDisplayMetric.ydpi + "。desityx（x的总密度）："
@@ -148,11 +149,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         Snackbar.make(v, "长按小球2秒进入下一页", Snackbar.LENGTH_LONG)
                 .setActionTextColor(Color.parseColor(color))
                 .setAction("或者戳我", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToTabActivity(content);
-            }
-        }).show();
+                    @Override
+                    public void onClick(View v) {
+                        ToTabActivity(content);
+                    }
+                }).show();
     }
 
     @Override

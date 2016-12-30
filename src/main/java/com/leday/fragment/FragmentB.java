@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.leday.Impl.ListViewHightImpl;
+import com.leday.View.ListViewHightImpl;
 import com.leday.R;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.StarActivity;
@@ -19,7 +19,7 @@ import com.leday.adapter.StarAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentB extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class FragmentB extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private ListView mListView;
     private List<String> mData = new ArrayList<>();

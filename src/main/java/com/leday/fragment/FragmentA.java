@@ -3,7 +3,6 @@ package com.leday.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +14,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.leday.Impl.ListViewHightImpl;
 import com.leday.R;
 import com.leday.Util.LogUtil;
+import com.leday.View.ListViewHightImpl;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.TodayActivity;
 import com.leday.application.MyApplication;
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class FragmentA extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class FragmentA extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private FloatingActionButton mFtn;
 
@@ -66,6 +65,7 @@ public class FragmentA extends Fragment implements AdapterView.OnItemClickListen
     }
 
     public void getJson() {
+        progressShow(getActivity());
         //获取时间,月和日
         int localMonth = mCalendar.get(Calendar.MONTH);
         int localDay = mCalendar.get(Calendar.DAY_OF_MONTH);
@@ -75,11 +75,12 @@ public class FragmentA extends Fragment implements AdapterView.OnItemClickListen
             @Override
             public void onResponse(String response) {
                 Dosuccess(response);
+                progressCancel();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                progressCancel();
             }
         });
         todayrequest.setTag("fragmenta");

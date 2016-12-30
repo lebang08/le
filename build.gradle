@@ -61,6 +61,11 @@ android {
                     umeng_channel: "Oppo"
             ]
         }
+        update {
+            manifestPlaceholders = [
+                    umeng_channel: "update"
+            ]
+        }
     }
 }
 

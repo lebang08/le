@@ -1,6 +1,5 @@
 package com.leday.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +13,7 @@ import com.leday.R;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SplashActivity extends Activity implements View.OnClickListener {
+public class SplashActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView mTitle, mTxtPass;
     private ImageView mImg;

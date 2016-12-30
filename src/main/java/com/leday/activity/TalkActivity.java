@@ -113,6 +113,11 @@ public class TalkActivity extends BaseActivity {
             mDatabase.close();
             mAdapter = new TalkAdapter(this, mDatas);
             mListView.setAdapter(mAdapter);
+            //设置为底部
+//            mListView.setSelection(mListView.getBottom());
+//            mListView.smoothScrollToPosition(0);//移动到首部
+//            mListView.smoothScrollToPosition(mAdapter.getCount() - 1);//移动到尾部
+            mListView.setSelection(mDatas.size()-1);
         }
     }
 

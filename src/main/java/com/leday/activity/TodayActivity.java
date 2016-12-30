@@ -17,7 +17,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.leday.R;
 import com.leday.Util.PreferenUtil;
 import com.leday.application.MyApplication;
-import com.leday.entity.Today;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -74,15 +73,17 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
     }
 
     private void getJson() {
+        progressdialogShow(this);
         StringRequest todayactivityrequest = new StringRequest(Request.Method.GET, URL_TODAY + local_id, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Dosuccess(response);
+                progressCancel();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-
+                progressCancel();
             }
         });
         todayactivityrequest.setTag("todayactivity");
@@ -130,7 +131,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
                 mDatabase.close();
                 Snackbar.make(view, "收藏成功" + local_content, Snackbar.LENGTH_SHORT).show();
                 //权宜之计，做个标识给FavoriteActivity用
-                PreferenUtil.put(TodayActivity.this,"todaytb_is_exist","actually_not");
+                PreferenUtil.put(TodayActivity.this, "todaytb_is_exist", "actually_not");
                 break;
             case R.id.img_today_back:
                 finish();
