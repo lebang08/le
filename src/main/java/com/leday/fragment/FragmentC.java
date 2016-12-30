@@ -9,13 +9,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.leday.Common.Constant;
+import com.leday.Interface.VolleyInterface;
 import com.leday.R;
-import com.leday.Util.LogUtil;
+import com.leday.Util.VolleyUtils;
 import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.WebViewActivity;
@@ -30,7 +28,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentC extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class FragmentC extends BaseFragment implements
+        AdapterView.OnItemClickListener, View.OnClickListener, VolleyInterface {
 
     private FloatingActionButton mFtn;
 
@@ -60,22 +59,9 @@ public class FragmentC extends BaseFragment implements AdapterView.OnItemClickLi
     }
 
     private void initEvent() {
+        //请求数据
         progressShow(getActivity());
-        StringRequest filmrequest = new StringRequest(Request.Method.GET, Constant.URL_WECHAT, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Dosuccess(response);
-                progressCancel();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                LogUtil.e("Wrong-BACK", "联接错误原因： " + error.getMessage());
-                progressCancel();
-            }
-        });
-        filmrequest.setTag("fragmentc");
-        MyApplication.getHttpQueue().add(filmrequest);
+        new VolleyUtils(getActivity(), this).GetRequest(Constant.URL_WECHAT, "fragmentc");
     }
 
     private void Dosuccess(String response) {
@@ -117,5 +103,16 @@ public class FragmentC extends BaseFragment implements AdapterView.OnItemClickLi
     @Override
     public void onClick(View v) {
         startActivity(new Intent(getActivity(), NoteActivity.class));
+    }
+
+    @Override
+    public void onSuccess(String response) {
+        Dosuccess(response);
+        progressCancel();
+    }
+
+    @Override
+    public void onFail(VolleyError error) {
+        progressCancel();
     }
 }

@@ -11,6 +11,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.leday.Common.Constant;
 import com.leday.R;
 import com.leday.Util.LogUtil;
 import com.leday.Util.ToastUtil;
@@ -26,7 +27,6 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
 
     private String localstar;
     private String localtime = "today";
-    private static final String URL_STAR = "http://web.juhe.cn:8080/constellation/getAll?key=c86828899c7c2b9cd39281ee48f90105&consName=";
 
     @Override
     protected void onStop() {
@@ -120,7 +120,8 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
 
     private void getJson() {
         progressdialogShow(this);
-        StringRequest starRequest = new StringRequest(Request.Method.GET, URL_STAR + localstar + "&type=" + localtime, new Response.Listener<String>() {
+        StringRequest starRequest = new StringRequest(Request.Method.GET,
+                Constant.URL_STAR + localstar + "&type=" + localtime, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 DoSuccess(response);
