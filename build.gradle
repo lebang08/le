@@ -8,8 +8,8 @@ android {
         applicationId "com.leday"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 27
-        versionName "2.7"
+        versionCode 25
+        versionName "2.5"
         manifestPlaceholders = [
                 umeng_channel: "update"
         ]
@@ -78,10 +78,11 @@ allprojects {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile files('libs/volley.jar')
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:support-v4:24.2.0'
+    compile 'com.android.support:design:24.2.0'
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
-    compile 'com.android.support:support-v4:24.2.0'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile files('libs/volley.jar')
 }

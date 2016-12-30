@@ -13,9 +13,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.leday.View.ListViewHightImpl;
+import com.leday.Common.Constant;
 import com.leday.R;
 import com.leday.Util.LogUtil;
+import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.WebViewActivity;
 import com.leday.adapter.WechatAdapter;
@@ -35,8 +36,6 @@ public class FragmentC extends BaseFragment implements AdapterView.OnItemClickLi
 
     private ListView mListView;
     private List<Wechat> wechatList = new ArrayList<>();
-
-    private static final String URL_WECHAT = "http://v.juhe.cn/weixin/query?key=4d8f538fca6369950978621cf6287bde";
 
     @Override
     public void onStop() {
@@ -62,7 +61,7 @@ public class FragmentC extends BaseFragment implements AdapterView.OnItemClickLi
 
     private void initEvent() {
         progressShow(getActivity());
-        StringRequest filmrequest = new StringRequest(Request.Method.GET, URL_WECHAT, new Response.Listener<String>() {
+        StringRequest filmrequest = new StringRequest(Request.Method.GET, Constant.URL_WECHAT, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Dosuccess(response);
@@ -104,7 +103,7 @@ public class FragmentC extends BaseFragment implements AdapterView.OnItemClickLi
         }
         WechatAdapter mAdapter = new WechatAdapter(getActivity(), wechatList);
         mListView.setAdapter(mAdapter);
-        new ListViewHightImpl(mListView).setListViewHeightBasedOnChildren();
+        new ListViewHightHelper(mListView).setListViewHeightBasedOnChildren();
     }
 
     @Override

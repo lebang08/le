@@ -27,8 +27,10 @@ import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
 import com.leday.R;
 import com.leday.application.MyApplication;
+import com.leday.entity.UpdateInfo;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,18 +43,14 @@ import java.net.URL;
 
 public class UpdateUtil {
 
-    private ProgressBar pb;
+    private ProgressBar mProgressBar;
     private Dialog mDownLoadDialog;
 
     private final String URL_SERVE = "http://www.iyuce.com/Scripts/leday.json";
     private static final int DOWNLOADING = 1;
     private static final int DOWNLOAD_FINISH = 0;
 
-    private String mVersion;
-    private String mVersionURL;
-    private String mTitle;
-    private String mMessage;
-    private String mNeedFlow;
+    private UpdateInfo updateInfo;
     private String mSavePath;
     private String mAlreayNew;
     private int mProgress;
@@ -77,24 +75,18 @@ public class UpdateUtil {
                 String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
                 JSONObject obj;
                 obj = new JSONObject(parseString);
-                LogUtil.i("obj = " + obj);
                 if (obj.getString("code").equals("0")) {
                     JSONArray data = obj.getJSONArray("data");
                     obj = data.getJSONObject(0);
-                    mVersion = obj.getString("version");
-                    mVersionURL = obj.getString("apkurl");
-                    mTitle = obj.getString("title");
-                    mMessage = obj.getString("message");
-                    //耗费的流量
-//                    mNeedFlow = obj.getString("flow");
-//                    LogUtil.e("mVersionURL", "VersionURL = " + mVersionURL);
+                    Gson gson = new Gson();
+                    updateInfo = gson.fromJson(obj.toString(), UpdateInfo.class);
+                    LogUtil.e("updateInfo", "updateInfo = " + updateInfo.toString());
                 }
-//				LogUtil.e("version", "远程version = " + mVersion);
-                if (isUpdate()) {
+                if (isUpdate(updateInfo.getVersion())) {
                     showNoticeDialog();
                 } else {
                     if (!TextUtils.isEmpty(mAlreayNew)) {
-                        ToastUtil.showMessage(mcontext, "已经是最新版本v" + mVersion + "啦");
+                        ToastUtil.showMessage(mcontext, "已经是最新版本v" + updateInfo.getVersion() + "啦");
                     }
                 }
             } catch (Exception e) {
@@ -108,7 +100,7 @@ public class UpdateUtil {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case DOWNLOADING:
-                    pb.setProgress(mProgress);
+                    mProgressBar.setProgress(mProgress);
                     break;
                 case DOWNLOAD_FINISH:
                     mDownLoadDialog.dismiss();
@@ -137,19 +129,17 @@ public class UpdateUtil {
     }
 
     //boolean比较本地版本是否需要更新
-    private boolean isUpdate() {
-        float serverVersion = Float.parseFloat(mVersion);
+    private boolean isUpdate(String server_version) {
+        float serverVersion = Float.parseFloat(server_version);
         //将该数据保存如sharepreference，留用
         PreferenUtil.put(mcontext, "serverVersion", String.valueOf(serverVersion));
-        LogUtil.e("serverVersion", "serverVersion = " + serverVersion);
         String localVersion = null;
-
         try {
             //获取versionName作比较
             localVersion = mcontext.getPackageManager().getPackageInfo("com.leday", 0).versionName;
             //将该数据保存如sharepreference，留用
             PreferenUtil.put(mcontext, "localVersion", mcontext.getPackageManager().getPackageInfo("com.leday", 0).versionName);
-            LogUtil.e("localVersion", "localVersion = " + localVersion + "||" + serverVersion);
+            LogUtil.e("localVersion = " + localVersion + "||" + serverVersion);
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -163,8 +153,8 @@ public class UpdateUtil {
             ToastUtil.showMessage(mcontext, "你当前不在WIFI环境，将耗费4.3M流量下载，建议在WIFI环境下下载哦", 3000);
         }
         AlertDialog.Builder builder = new Builder(mcontext, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
-        builder.setTitle(mTitle);
-        builder.setMessage(mMessage);
+        builder.setTitle(updateInfo.getTitle());
+        builder.setMessage(updateInfo.getMessage());
         builder.setPositiveButton("立刻更新", new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -190,7 +180,7 @@ public class UpdateUtil {
         builder.setTitle("下载中");
 
         View view = LayoutInflater.from(mcontext).inflate(R.layout.dialog_progress, null);
-        pb = (ProgressBar) view.findViewById(R.id.update_progress);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.update_progress);
         builder.setView(view);
         builder.setNegativeButton("取消下载", new OnClickListener() {
             @Override
@@ -219,12 +209,12 @@ public class UpdateUtil {
                             dir.mkdir();
                         }
 
-                        HttpURLConnection conn = (HttpURLConnection) new URL(mVersionURL).openConnection();
+                        HttpURLConnection conn = (HttpURLConnection) new URL(updateInfo.getApkurl()).openConnection();
                         conn.connect();
                         InputStream is = conn.getInputStream();
                         int length = conn.getContentLength();
 
-                        File apkFile = new File(mSavePath, mVersion);
+                        File apkFile = new File(mSavePath, updateInfo.getVersion());
                         FileOutputStream fos = new FileOutputStream(apkFile);
 
                         int count = 0;
@@ -255,7 +245,7 @@ public class UpdateUtil {
 
     //安装下载好的APK
     private void installAPK() {
-        File apkFile = new File(mSavePath, mVersion);
+        File apkFile = new File(mSavePath, updateInfo.getVersion());
         if (!apkFile.exists()) {
             return;
         }

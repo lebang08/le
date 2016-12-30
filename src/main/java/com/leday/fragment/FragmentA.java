@@ -14,9 +14,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.google.gson.Gson;
+import com.leday.Common.Constant;
 import com.leday.R;
 import com.leday.Util.LogUtil;
-import com.leday.View.ListViewHightImpl;
+import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.TodayActivity;
 import com.leday.application.MyApplication;
@@ -39,7 +41,6 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
     private List<Today> mTodayList = new ArrayList<>();
 
     private Calendar mCalendar = Calendar.getInstance();
-    private static final String URL_TODAY = "http://v.juhe.cn/todayOnhistory/queryEvent.php?key=776cbc23ec84837a647a7714a0f06bff&date=";
 
     @Override
     public void onStop() {
@@ -69,9 +70,9 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
         //获取时间,月和日
         int localMonth = mCalendar.get(Calendar.MONTH);
         int localDay = mCalendar.get(Calendar.DAY_OF_MONTH);
-        String URL_TOTAL = URL_TODAY + (localMonth + 1) + "/" + localDay;
         //请求网络
-        StringRequest todayrequest = new StringRequest(Request.Method.GET, URL_TOTAL, new Response.Listener<String>() {
+        StringRequest todayrequest = new StringRequest(Request.Method.GET,
+                Constant.URL_TODAY + (localMonth + 1) + "/" + localDay, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Dosuccess(response);
@@ -89,6 +90,8 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
 
     //请求成功的处理
     private void Dosuccess(String response) {
+        Gson gson = new Gson();
+
         JSONObject obj;
         JSONArray arr;
         Today today;
@@ -100,10 +103,8 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
             LogUtil.e("URL_TOTAL", arr.toString());
             for (int i = 0; i <= arr.length(); i++) {
                 obj = arr.getJSONObject(i);
-                today = new Today();
-                today.setDate(obj.getString("date"));
-                today.setTitle(obj.getString("title"));
-                today.setE_id(obj.getString("e_id"));
+                //Gson解析对象
+                today = gson.fromJson(obj.toString(), Today.class);
                 merge = (i + 1) + "、 " + today.getDate() + ": " + today.getTitle();
                 mDataList.add(merge);
                 mTodayList.add(today);
@@ -113,7 +114,7 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
         }
         ArrayAdapter mAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, mDataList);
         mListView.setAdapter(mAdapter);
-        new ListViewHightImpl(mListView).setListViewHeightBasedOnChildren();
+        new ListViewHightHelper(mListView).setListViewHeightBasedOnChildren();
     }
 
     @Override

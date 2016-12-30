@@ -18,7 +18,7 @@ import com.leday.R;
 import com.leday.Util.PreferenUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
-import com.leday.View.ListViewHightImpl;
+import com.leday.View.ListViewHightHelper;
 import com.leday.activity.FavoriteActivity;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.TalkActivity;
@@ -58,7 +58,7 @@ public class FragmentD extends BaseFragment implements AdapterView.OnItemClickLi
         initData();
         ArrayAdapter mAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, mData);
         mListView.setAdapter(mAdapter);
-        new ListViewHightImpl(mListView).setListViewHeightBasedOnChildren();
+        new ListViewHightHelper(mListView).setListViewHeightBasedOnChildren();
     }
 
     /**
