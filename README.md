@@ -6,3 +6,5 @@ since June to now, you can load Le in mostly app store, Tecent /Baidu / 360 /Xia
 Le which supply some infomation which I like. and some jar or util inside.
 
 I will keep it's growth on .
+
+and now I have a partner.
