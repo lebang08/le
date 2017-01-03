@@ -3,6 +3,7 @@ package com.leday.Util;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -10,39 +11,65 @@ import com.android.volley.toolbox.StringRequest;
 import com.leday.Interface.VolleyInterface;
 import com.leday.application.MyApplication;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Administrator on 2016/12/30.
  */
 public class VolleyUtils {
 
     private Context mContext;
-    private VolleyInterface mInterface;
+//    private VolleyInterface mInterface;
 
-    public VolleyUtils(Context context, VolleyInterface volleyinterface) {
+    public VolleyUtils(Context context) {
         this.mContext = context;
-        this.mInterface = volleyinterface;
+//        this.mInterface = volleyinterface;
     }
 
-    public void GetRequest(String url, String tag) {
+    /**
+     * 与其把接口放在构造函数中，不如直接作为参数放在方法中
+     *
+     * @param url
+     * @param tag
+     * @param volleyinterface
+     */
+    public void GetRequest(String url, String tag, final VolleyInterface volleyinterface) {
         StringRequest mStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                ToastUtil.show(mContext, "请求成功", Toast.LENGTH_SHORT);
-                LogUtil.i("S= " + s);
-                mInterface.onSuccess(s);
+                volleyinterface.onSuccess(s);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
-                ToastUtil.show(mContext, "请求失败", Toast.LENGTH_SHORT);
-                mInterface.onFail(volleyError);
+                ToastUtil.show(mContext, "网络请求失败，请检查网络", Toast.LENGTH_SHORT);
+                volleyinterface.onFail(volleyError);
             }
         });
         mStringRequest.setTag(tag);
         MyApplication.getHttpQueue().add(mStringRequest);
     }
 
-    public static void PostRequest() {
-
+    public void PostRequest(String url, String tag, final HashMap<String, String> map, final VolleyInterface volleyinterface) {
+        StringRequest mStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                volleyinterface.onSuccess(s);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                ToastUtil.show(mContext, "网络请求失败，请检查网络", Toast.LENGTH_SHORT);
+                volleyinterface.onFail(volleyError);
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                return map;
+            }
+        };
+        mStringRequest.setTag(tag);
+        MyApplication.getHttpQueue().add(mStringRequest);
     }
 }

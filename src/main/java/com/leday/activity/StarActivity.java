@@ -7,14 +7,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.leday.Common.Constant;
+import com.leday.Interface.VolleyInterface;
 import com.leday.R;
-import com.leday.Util.LogUtil;
 import com.leday.Util.ToastUtil;
+import com.leday.Util.VolleyUtils;
 import com.leday.application.MyApplication;
 
 import org.json.JSONException;
@@ -28,10 +26,12 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
     private String localstar;
     private String localtime = "today";
 
+    private static final String Tag_STAR_ACTIVITY = "staractivity";
+
     @Override
     protected void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll("staractivity");
+        MyApplication.getHttpQueue().cancelAll(Tag_STAR_ACTIVITY);
     }
 
     @Override
@@ -120,22 +120,19 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
 
     private void getJson() {
         progressdialogShow(this);
-        StringRequest starRequest = new StringRequest(Request.Method.GET,
-                Constant.URL_STAR + localstar + "&type=" + localtime, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                DoSuccess(response);
-                progressCancel();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                LogUtil.e("volleyError = " + volleyError.getMessage());
-                progressCancel();
-            }
-        });
-        starRequest.setTag("staractivity");
-        MyApplication.getHttpQueue().add(starRequest);
+        new VolleyUtils(this).GetRequest(Constant.URL_STAR + localstar + "&type=" + localtime
+                , Tag_STAR_ACTIVITY, new VolleyInterface() {
+                    @Override
+                    public void onSuccess(String response) {
+                        DoSuccess(response);
+                        progressCancel();
+                    }
+
+                    @Override
+                    public void onFail(VolleyError error) {
+                        progressCancel();
+                    }
+                });
     }
 
     private void DoSuccess(String response) {

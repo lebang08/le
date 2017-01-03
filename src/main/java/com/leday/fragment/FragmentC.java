@@ -29,17 +29,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentC extends BaseFragment implements
-        AdapterView.OnItemClickListener, View.OnClickListener, VolleyInterface {
+        AdapterView.OnItemClickListener, View.OnClickListener {
 
     private FloatingActionButton mFtn;
 
     private ListView mListView;
     private List<Wechat> wechatList = new ArrayList<>();
 
+    private static final String TAG_FRAGMENT_C = "fragmentc";
+
     @Override
     public void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll("fragmentc");
+        MyApplication.getHttpQueue().cancelAll(TAG_FRAGMENT_C);
     }
 
     @Override
@@ -58,12 +60,30 @@ public class FragmentC extends BaseFragment implements
         mListView.setOnItemClickListener(this);
     }
 
+    /**
+     * 请求数据
+     */
     private void initEvent() {
-        //请求数据
         progressShow(getActivity());
-        new VolleyUtils(getActivity(), this).GetRequest(Constant.URL_WECHAT, "fragmentc");
+        new VolleyUtils(getActivity()).GetRequest(Constant.URL_WECHAT, TAG_FRAGMENT_C, new VolleyInterface() {
+            @Override
+            public void onSuccess(String response) {
+                Dosuccess(response);
+                progressCancel();
+            }
+
+            @Override
+            public void onFail(VolleyError error) {
+                progressCancel();
+            }
+        });
     }
 
+    /**
+     * 请求成功后对data结果进行处理
+     *
+     * @param response
+     */
     private void Dosuccess(String response) {
         JSONObject obj;
         JSONArray arr;
@@ -103,16 +123,5 @@ public class FragmentC extends BaseFragment implements
     @Override
     public void onClick(View v) {
         startActivity(new Intent(getActivity(), NoteActivity.class));
-    }
-
-    @Override
-    public void onSuccess(String response) {
-        Dosuccess(response);
-        progressCancel();
-    }
-
-    @Override
-    public void onFail(VolleyError error) {
-        progressCancel();
     }
 }

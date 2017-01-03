@@ -10,14 +10,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.leday.Common.Constant;
+import com.leday.Interface.VolleyInterface;
 import com.leday.R;
 import com.leday.Util.LogUtil;
+import com.leday.Util.VolleyUtils;
 import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.TodayActivity;
@@ -42,10 +41,12 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
 
     private Calendar mCalendar = Calendar.getInstance();
 
+    private static final String TAG_FRAGMENT_A = "fragmenta";
+
     @Override
     public void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll("fragmenta");
+        MyApplication.getHttpQueue().cancelAll(TAG_FRAGMENT_A);
     }
 
     @Override
@@ -71,24 +72,24 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
         int localMonth = mCalendar.get(Calendar.MONTH);
         int localDay = mCalendar.get(Calendar.DAY_OF_MONTH);
         //请求网络
-        StringRequest todayrequest = new StringRequest(Request.Method.GET,
-                Constant.URL_TODAY + (localMonth + 1) + "/" + localDay, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Dosuccess(response);
-                progressCancel();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                progressCancel();
-            }
-        });
-        todayrequest.setTag("fragmenta");
-        MyApplication.getHttpQueue().add(todayrequest);
+        new VolleyUtils(getActivity()).GetRequest(Constant.URL_TODAY + (localMonth + 1) + "/" + localDay
+                , TAG_FRAGMENT_A, new VolleyInterface() {
+                    @Override
+                    public void onSuccess(String response) {
+                        Dosuccess(response);
+                        progressCancel();
+                    }
+
+                    @Override
+                    public void onFail(VolleyError error) {
+                        progressCancel();
+                    }
+                });
     }
 
-    //请求成功的处理
+    /**
+     * 请求成功的处理
+     */
     private void Dosuccess(String response) {
         Gson gson = new Gson();
 
