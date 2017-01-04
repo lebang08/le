@@ -7,16 +7,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.VolleyError;
 import com.leday.Common.Constant;
-import com.leday.Interface.VolleyInterface;
 import com.leday.R;
+import com.leday.Util.LogUtil;
+import com.leday.Util.OkHttpUtils;
 import com.leday.Util.ToastUtil;
-import com.leday.Util.VolleyUtils;
 import com.leday.application.MyApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class StarActivity extends BaseActivity implements View.OnClickListener {
 
@@ -120,19 +125,46 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
 
     private void getJson() {
         progressdialogShow(this);
-        new VolleyUtils(this).GetRequest(Constant.URL_STAR + localstar + "&type=" + localtime
-                , Tag_STAR_ACTIVITY, new VolleyInterface() {
+        new OkHttpUtils().OkHttpGet(Constant.URL_STAR + localstar + "&type=" + localtime, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void onSuccess(String response) {
-                        DoSuccess(response);
-                        progressCancel();
-                    }
-
-                    @Override
-                    public void onFail(VolleyError error) {
+                    public void run() {
                         progressCancel();
                     }
                 });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            DoSuccess(response.body().string());
+                            progressCancel();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+
+//        new VolleyUtils(this).GetRequest(Constant.URL_STAR + localstar + "&type=" + localtime
+//                , Tag_STAR_ACTIVITY, new VolleyInterface() {
+//                    @Override
+//                    public void onSuccess(String response) {
+//                        DoSuccess(response);
+//                        progressCancel();
+//                    }
+//
+//                    @Override
+//                    public void onFail(VolleyError error) {
+//                        progressCancel();
+//                    }
+//                });
     }
 
     private void DoSuccess(String response) {
