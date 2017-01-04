@@ -20,16 +20,12 @@ import java.util.Map;
 public class VolleyUtils {
 
     private Context mContext;
-//    private VolleyInterface mInterface;
 
     public VolleyUtils(Context context) {
         this.mContext = context;
-//        this.mInterface = volleyinterface;
     }
 
     /**
-     * 与其把接口放在构造函数中，不如直接作为参数放在方法中
-     *
      * @param url
      * @param tag
      * @param volleyinterface

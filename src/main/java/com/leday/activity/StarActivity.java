@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.leday.Common.Constant;
+import com.leday.Interface.OkHttpInterface;
 import com.leday.R;
-import com.leday.Util.LogUtil;
 import com.leday.Util.OkHttpUtils;
 import com.leday.Util.ToastUtil;
 import com.leday.application.MyApplication;
@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.Response;
 
 public class StarActivity extends BaseActivity implements View.OnClickListener {
@@ -125,46 +124,22 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
 
     private void getJson() {
         progressdialogShow(this);
-        new OkHttpUtils().OkHttpGet(Constant.URL_STAR + localstar + "&type=" + localtime, new Callback() {
+        OkHttpUtils.OkHttpGet(this, Constant.URL_STAR + localstar + "&type=" + localtime, new OkHttpInterface() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressCancel();
-                    }
-                });
+            public void onSuccess(Response response) {
+                try {
+                    DoSuccess(response.body().string());
+                    progressCancel();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            DoSuccess(response.body().string());
-                            progressCancel();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+            public void onFail(Call call) {
+                progressCancel();
             }
         });
-
-//        new VolleyUtils(this).GetRequest(Constant.URL_STAR + localstar + "&type=" + localtime
-//                , Tag_STAR_ACTIVITY, new VolleyInterface() {
-//                    @Override
-//                    public void onSuccess(String response) {
-//                        DoSuccess(response);
-//                        progressCancel();
-//                    }
-//
-//                    @Override
-//                    public void onFail(VolleyError error) {
-//                        progressCancel();
-//                    }
-//                });
     }
 
     private void DoSuccess(String response) {

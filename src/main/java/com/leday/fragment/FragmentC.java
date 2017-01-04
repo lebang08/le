@@ -9,11 +9,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.android.volley.VolleyError;
 import com.leday.Common.Constant;
-import com.leday.Interface.VolleyInterface;
+import com.leday.Interface.OkHttpInterface;
 import com.leday.R;
-import com.leday.Util.VolleyUtils;
+import com.leday.Util.OkHttpUtils;
 import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.WebViewActivity;
@@ -25,8 +24,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class FragmentC extends BaseFragment implements
         AdapterView.OnItemClickListener, View.OnClickListener {
@@ -65,15 +68,19 @@ public class FragmentC extends BaseFragment implements
      */
     private void initEvent() {
         progressShow(getActivity());
-        new VolleyUtils(getActivity()).GetRequest(Constant.URL_WECHAT, TAG_FRAGMENT_C, new VolleyInterface() {
+        OkHttpUtils.OkHttpGet(getActivity(), Constant.URL_WECHAT, new OkHttpInterface() {
             @Override
-            public void onSuccess(String response) {
-                Dosuccess(response);
-                progressCancel();
+            public void onSuccess(Response response) {
+                try {
+                    Dosuccess(response.body().string());
+                    progressCancel();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
-            public void onFail(VolleyError error) {
+            public void onFail(Call call) {
                 progressCancel();
             }
         });

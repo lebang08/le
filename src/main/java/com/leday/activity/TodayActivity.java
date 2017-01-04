@@ -14,10 +14,10 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.bumptech.glide.Glide;
 import com.leday.R;
 import com.leday.Util.PreferenUtil;
 import com.leday.application.MyApplication;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,7 +107,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
                 obj = arr.getJSONObject(i);
                 String imgurl = obj.getString("url");
                 ImageView mImgview = new ImageView(TodayActivity.this);
-                Picasso.with(TodayActivity.this).load(imgurl).into(mImgview);
+                Glide.with(TodayActivity.this).load(imgurl).into(mImgview);
                 mViewFlipper.addView(mImgview);
             }
         } catch (JSONException e) {
