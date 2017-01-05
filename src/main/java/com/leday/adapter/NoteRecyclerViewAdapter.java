@@ -14,20 +14,19 @@ import java.util.ArrayList;
 
 public class NoteRecyclerViewAdapter extends RecyclerView.Adapter<NoteRecyclerViewAdapter.MyViewHolder> {
 
-    private Context mcontext;
+    private Context mContext;
     private ArrayList<Note> mList;
     private LayoutInflater mLayoutInflater;
 
     public NoteRecyclerViewAdapter(Context context, ArrayList<Note> list) {
-        this.mcontext = context;
+        this.mContext = context;
         this.mList = list;
         this.mLayoutInflater = LayoutInflater.from(context);
     }
 
     @Override
     public NoteRecyclerViewAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        MyViewHolder viewholder = new MyViewHolder(
-                mLayoutInflater.inflate(R.layout.item_note, parent, false));
+        MyViewHolder viewholder = new MyViewHolder(mLayoutInflater.inflate(R.layout.item_note, parent, false));
         return viewholder;
     }
 

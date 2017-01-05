@@ -1,49 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#3f51b5">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/txt_notedetial_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="64dp"
-            android:layout_marginRight="64dp"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:maxLines="1"
-            android:text="便签内容"
-            android:textColor="#ffffff"
-            android:textSize="18sp" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_activity_notedetail"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    </android.support.design.widget.AppBarLayout>
 
-        <ImageButton
-            android:id="@+id/img_back"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="8dp"
-            android:background="@drawable/arrow_white_back"
-            android:onClick="doBack" />
+    <!--<FrameLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="48dp"-->
+    <!--android:background="#3f51b5">-->
 
-        <Button
-            android:id="@+id/img_makesure"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_gravity="center_vertical|right"
-            android:layout_marginRight="8dp"
-            android:background="#00000000"
-            android:onClick="doSubmit"
-            android:text="保存"
-            android:textColor="#ffffff"
-            android:textSize="16sp" />
-    </FrameLayout>
+    <!--<TextView-->
+    <!--android:id="@+id/txt_notedetial_title"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:layout_marginLeft="64dp"-->
+    <!--android:layout_marginRight="64dp"-->
+    <!--android:ellipsize="end"-->
+    <!--android:gravity="center"-->
+    <!--android:maxLines="1"-->
+    <!--android:text="便签内容"-->
+    <!--android:textColor="#ffffff"-->
+    <!--android:textSize="18sp" />-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/img_back"-->
+    <!--android:layout_width="24dp"-->
+    <!--android:layout_height="24dp"-->
+    <!--android:layout_gravity="center_vertical"-->
+    <!--android:layout_marginLeft="8dp"-->
+    <!--android:background="@drawable/arrow_white_back"-->
+    <!--android:onClick="doBack" />-->
+
+    <!--<Button-->
+    <!--android:id="@+id/img_makesure"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="24dp"-->
+    <!--android:layout_gravity="center_vertical|right"-->
+    <!--android:layout_marginRight="8dp"-->
+    <!--android:background="#00000000"-->
+    <!--android:onClick="doSubmit"-->
+    <!--android:text="保存"-->
+    <!--android:textColor="#ffffff"-->
+    <!--android:textSize="16sp" />-->
+    <!--</FrameLayout>-->
 
     <LinearLayout
         android:layout_width="match_parent"

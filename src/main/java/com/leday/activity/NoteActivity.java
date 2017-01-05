@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 public class NoteActivity extends BaseActivity {
 
     private TextView mTitle;
+    private SwipeRefreshLayout mSwipeRefresh;
 
     private RecyclerView mRecyclerView;
     private ArrayList<Note> mList = new ArrayList<>();
@@ -53,6 +55,7 @@ public class NoteActivity extends BaseActivity {
 
     private void initView() {
         mTitle = (TextView) findViewById(R.id.txt_note_title);
+        mSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_activity_note);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_activity_note);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -64,8 +67,36 @@ public class NoteActivity extends BaseActivity {
         initData();
 
         mAdapter = new NoteRecyclerViewAdapter(this, mList);
-
         mRecyclerView.setAdapter(mAdapter);
+
+        //swipe设置刷新时需要做的事
+        mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshFruits();
+            }
+        });
+    }
+
+    private void refreshFruits() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //必须在主线程操作
+                            mSwipeRefresh.setRefreshing(false);
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     /**

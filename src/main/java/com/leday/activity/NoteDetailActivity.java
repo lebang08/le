@@ -6,8 +6,12 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -23,7 +27,7 @@ import java.util.Date;
 /**
  * Created by Administrator on 2016/10/26.
  */
-public class NoteDetailActivity extends BaseActivity {
+public class NoteDetailActivity extends AppCompatActivity {
 
     private EditText mTitle, mContent;
     private Button mBtnTime;
@@ -35,6 +39,13 @@ public class NoteDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notedetail);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_activity_notedetail);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.arrow_white_back);
+        }
 
         initView();
     }
@@ -94,15 +105,13 @@ public class NoteDetailActivity extends BaseActivity {
 
     /**
      * 提交保存标签
-     *
-     * @param view
      */
-    public void doSubmit(View view) {
+    public void doSubmit() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         local_content = mContent.getText().toString();
         if (TextUtils.isEmpty(local_content)) {
-            Snackbar.make(view, "便签内容不能为空", Snackbar.LENGTH_SHORT).show();
+            ToastUtil.showMessage(this, "便签内容不能为空");
             return;
         }
         local_title = mTitle.getText().toString();
@@ -124,6 +133,25 @@ public class NoteDetailActivity extends BaseActivity {
         mValues.clear();
         mDatabase.close();
         PreferenUtil.put(NoteDetailActivity.this, "notetb_is_exist", "actually_not");
-        ToastUtil.showMessage(this,"保存便签成功");
+        ToastUtil.showMessage(this, "保存便签成功");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.submit:
+                doSubmit();
+                break;
+        }
+        return true;
     }
 }
