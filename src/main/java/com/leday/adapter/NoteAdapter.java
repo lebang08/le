@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.leday.R;
@@ -57,6 +56,5 @@ public class NoteAdapter extends BaseAdapter {
 
     private class ViewHold {
         private TextView mContent, mTime;
-        private ImageView mImg;
     }
 }

@@ -124,7 +124,7 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
 
     private void getJson() {
         progressdialogShow(this);
-        OkHttpUtils.OkHttpGet(this, Constant.URL_STAR + localstar + "&type=" + localtime, new OkHttpInterface() {
+        new OkHttpUtils().OkHttpGet(this, Constant.URL_STAR + localstar + "&type=" + localtime, new OkHttpInterface() {
             @Override
             public void onSuccess(Response response) {
                 try {

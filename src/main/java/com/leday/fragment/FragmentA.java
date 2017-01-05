@@ -10,12 +10,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.leday.Common.Constant;
-import com.leday.Interface.OkHttpInterface;
+import com.leday.Interface.VolleyInterface;
 import com.leday.R;
 import com.leday.Util.LogUtil;
-import com.leday.Util.OkHttpUtils;
+import com.leday.Util.VolleyUtils;
 import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.TodayActivity;
@@ -26,13 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Response;
 
 public class FragmentA extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
@@ -75,22 +72,19 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
         int localMonth = mCalendar.get(Calendar.MONTH);
         int localDay = mCalendar.get(Calendar.DAY_OF_MONTH);
         //请求网络
-        OkHttpUtils.OkHttpGet(getActivity(), Constant.URL_TODAY + (localMonth + 1) + "/" + localDay, new OkHttpInterface() {
-            @Override
-            public void onSuccess(Response response) {
-                try {
-                    Dosuccess(response.body().string());
-                    progressCancel();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        new VolleyUtils(getActivity()).GetRequest(Constant.URL_TODAY + (localMonth + 1) + "/" + localDay
+                , TAG_FRAGMENT_A, new VolleyInterface() {
+                    @Override
+                    public void onSuccess(String response) {
+                        Dosuccess(response);
+                        progressCancel();
+                    }
 
-            @Override
-            public void onFail(Call call) {
-                progressCancel();
-            }
-        });
+                    @Override
+                    public void onFail(VolleyError error) {
+                        progressCancel();
+                    }
+                });
     }
 
     /**

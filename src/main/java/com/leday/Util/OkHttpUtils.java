@@ -18,7 +18,7 @@ import okhttp3.Response;
 
 public class OkHttpUtils {
 
-    public static void OkHttpGet(final Activity activity, String url, final OkHttpInterface okHttpInterface) {
+    public void OkHttpGet(final Activity activity, String url, final OkHttpInterface okHttpInterface) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         client.newCall(request).enqueue(new Callback() {
