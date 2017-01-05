@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    android:background="#f0f2f5"
     android:orientation="vertical"
     android:paddingBottom="8dp"
     android:paddingTop="8dp">
@@ -46,7 +47,7 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLines="2"
-            android:paddingLeft="16dp"
+            android:paddingLeft="32dp"
             android:textColor="#3f51b5"
             android:textSize="16sp" />
     </LinearLayout>

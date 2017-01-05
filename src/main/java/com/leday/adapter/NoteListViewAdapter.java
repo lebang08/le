@@ -12,12 +12,12 @@ import com.leday.entity.Note;
 
 import java.util.List;
 
-public class NoteAdapter extends BaseAdapter {
+public class NoteListViewAdapter extends BaseAdapter {
 
     private List<Note> mList;
     private LayoutInflater mInflater;
 
-    public NoteAdapter(Context mContext, List<Note> mList) {
+    public NoteListViewAdapter(Context mContext, List<Note> mList) {
         this.mList = mList;
         mInflater = LayoutInflater.from(mContext);
     }
