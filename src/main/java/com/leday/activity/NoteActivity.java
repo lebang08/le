@@ -12,12 +12,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import com.leday.Interface.RecyclerItemClickListener;
 import com.leday.R;
 import com.leday.Util.PreferenUtil;
+import com.leday.Util.ToastUtil;
 import com.leday.adapter.NoteRecyclerViewAdapter;
 import com.leday.entity.Note;
 
@@ -32,8 +34,9 @@ public class NoteActivity extends BaseActivity {
     private SwipeRefreshLayout mSwipeRefresh;
 
     private RecyclerView mRecyclerView;
-    private ArrayList<Note> mList = new ArrayList<>();
     private NoteRecyclerViewAdapter mAdapter;
+    private ArrayList<Note> mList = new ArrayList<>();
+    private LinearLayoutManager mLinearLayoutmanager;
 
     private SQLiteDatabase mDatabase;
 
@@ -58,7 +61,8 @@ public class NoteActivity extends BaseActivity {
         mSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_activity_note);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_activity_note);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mLinearLayoutmanager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLinearLayoutmanager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setHasFixedSize(true);
         //RecyclerView设置Item事件
@@ -68,6 +72,7 @@ public class NoteActivity extends BaseActivity {
 
         mAdapter = new NoteRecyclerViewAdapter(this, mList);
         mRecyclerView.setAdapter(mAdapter);
+//        setFooterView(mRecyclerView);
 
         //swipe设置刷新时需要做的事
         mSwipeRefresh.setColorSchemeResources(R.color.colorPrimary);
@@ -84,11 +89,14 @@ public class NoteActivity extends BaseActivity {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(800);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             //必须在主线程操作
+                            mList.clear();
+                            initData();
+                            mAdapter.notifyDataSetChanged();
                             mSwipeRefresh.setRefreshing(false);
                         }
                     });
@@ -130,6 +138,12 @@ public class NoteActivity extends BaseActivity {
      * @param view
      */
     public void doChange(View view) {
+        //TODO 做上拉加载的判断方式,自定义一个View，继承RecyclerView，重写滑动监听，外加接口.类似FillingMissView
+        int lastVisibleItemPosition = (mLinearLayoutmanager).findLastVisibleItemPosition();
+        if (lastVisibleItemPosition >= (mList.size() - 1)) {
+            ToastUtil.showMessage(this, "到最后啦，做上拉加载吧");
+        }
+
         Snackbar.make(view, "修改便签底色风格", Snackbar.LENGTH_SHORT)
                 .setActionTextColor(Color.parseColor("#3f51b5"))
                 .setAction("确定", new View.OnClickListener() {
@@ -194,7 +208,7 @@ public class NoteActivity extends BaseActivity {
 
                                 //带动画的效果则不能用notyfyDataSetChanged()
                                 //要用notifyItemInserted(position)与notifyItemRemoved(position)
-                                //有bug
+                                //有bug(源于同时可以删除多个数据)
                                 mList.remove(position);
                                 mAdapter.notifyItemRemoved(position);
                                 //无bug
@@ -210,5 +224,10 @@ public class NoteActivity extends BaseActivity {
                         .show();
             }
         }));
+    }
+
+    public void setFooterView(RecyclerView recyclerview) {
+        View footer = LayoutInflater.from(this).inflate(R.layout.item_footer_view, recyclerview, false);
+        mAdapter.setFooterView(footer);
     }
 }
