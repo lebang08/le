@@ -28,7 +28,8 @@
             android:paddingTop="4dp"
             android:text="倒计时5秒"
             android:textColor="#ffffff"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/txt_splash_pass"

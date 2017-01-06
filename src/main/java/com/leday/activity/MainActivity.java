@@ -38,6 +38,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             if ((System.currentTimeMillis() - lastTime) < 2000) {
                 this.finish();
+//                moveTaskToBack(true);
             } else {
                 ToastUtil.showMessage(this, "再按一次退出程序");
                 lastTime = System.currentTimeMillis();

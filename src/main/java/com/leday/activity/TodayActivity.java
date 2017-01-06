@@ -107,7 +107,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
                 obj = arr.getJSONObject(i);
                 String imgurl = obj.getString("url");
                 ImageView mImgview = new ImageView(TodayActivity.this);
-                Glide.with(TodayActivity.this).load(imgurl).into(mImgview);
+                Glide.with(TodayActivity.this).load(imgurl).crossFade(3000).into(mImgview);
                 mViewFlipper.addView(mImgview);
             }
         } catch (JSONException e) {

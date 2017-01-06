@@ -3,38 +3,20 @@ package com.leday.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.leday.R;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class SplashActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView mTitle, mTxtPass;
-    private ImageView mImg;
     private Timer mTimer = new Timer();
-    private final int DO_COUNT = 0;
-    private int count;
 
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == DO_COUNT) {
-                mTitle.setText("倒计时" + msg.obj + "秒");
-                if ((int) msg.obj == 0) {
-                    startActivity(new Intent(SplashActivity.this, TabActivity.class));
-                    SplashActivity.this.finish();
-                    mTimer.cancel();
-                }
-            }
-        }
-    };
+    private Handler mHandler = new Handler();
+    private boolean isInMianAcitivity = false;
 
     @Override
     protected void onDestroy() {
@@ -48,21 +30,15 @@ public class SplashActivity extends BaseActivity implements View.OnClickListener
         setContentView(R.layout.activity_splash);
 
         initView();
-        count = 2;
-        mTimer.schedule(new TimerTask() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Message msg = Message.obtain();
-                count = count - 1;
-                msg.what = DO_COUNT;
-                msg.obj = count;
-                mHandler.sendMessage(msg);
+                toMain();
             }
-        }, 100, 1000);
+        }, 2000);
     }
 
     private void initView() {
-        mImg = (ImageView) findViewById(R.id.img_activity_splash);
         mTitle = (TextView) findViewById(R.id.txt_splash_count);
         mTxtPass = (TextView) findViewById(R.id.txt_splash_pass);
 
@@ -71,9 +47,16 @@ public class SplashActivity extends BaseActivity implements View.OnClickListener
 
     @Override
     public void onClick(View view) {
-        mTimer.cancel();
-        startActivity(new Intent(SplashActivity.this, TabActivity.class));
-        this.finish();
+        toMain();
     }
 
+    private void toMain() {
+        if (isInMianAcitivity) {
+            return;
+        }
+        startActivity(new Intent(SplashActivity.this, TabActivity.class));
+        overridePendingTransition(R.anim.screen_zoom_in, R.anim.screen_zoom_out);
+        SplashActivity.this.finish();
+        isInMianAcitivity = true;
+    }
 }
