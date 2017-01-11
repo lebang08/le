@@ -40,12 +40,10 @@
             android:textColor="#ffffff" />
     </FrameLayout>
 
-    <ViewFlipper
-        android:id="@+id/viewflipper_activity_today"
+    <com.youth.banner.Banner
+        android:id="@+id/banner_activity_today"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:layout_marginTop="16dp"
-        android:scaleType="fitXY" />
+        android:layout_height="240dp" />
 
     <ScrollView
         android:layout_width="match_parent"
