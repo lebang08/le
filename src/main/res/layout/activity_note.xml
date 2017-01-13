@@ -44,19 +44,14 @@
             android:onClick="doWrite" />
     </FrameLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_activity_note"
+    <com.jcodecraeer.xrecyclerview.XRecyclerView
+        android:id="@+id/recycler_activity_note"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="48dp">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_activity_note"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="48dp"
-            android:padding="4dp" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:scrollbarFadeDuration="1"
+        android:scrollbarSize="4dp"
+        android:scrollbars="vertical" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/ftn_activity_note"

@@ -38,7 +38,6 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
     private String local_content;
     //图片数组
     private ArrayList<String> imgList = new ArrayList<>();
-    private ArrayList<String> titleList = new ArrayList<>();
 
     @Override
     protected void onStop() {
@@ -50,7 +49,6 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onStart() {
         super.onStart();
-        getJson();
         banner.startAutoPlay();
     }
 
@@ -60,6 +58,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
         setContentView(R.layout.activity_today);
 
         initView();
+        getJson();
     }
 
     private void initView() {
@@ -114,16 +113,14 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
                 obj = arr.getJSONObject(i);
                 String imgurl = obj.getString("url");
                 imgList.add(imgurl);
-                titleList.add("i = " + i);
             }
             //设置图片加载器
             banner.setImageLoader(new GlideImageLoader());
             //设置图片集合
             banner.setImages(imgList);
             banner.setIndicatorGravity(BannerConfig.RIGHT);
-            banner.setBannerStyle(BannerConfig.NUM_INDICATOR_TITLE);
+            banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
             banner.setBannerAnimation(Transformer.ZoomOutSlide);
-            banner.setBannerTitles(titleList);
             //banner设置方法全部调用完毕时最后调用
             banner.start();
         } catch (JSONException e) {

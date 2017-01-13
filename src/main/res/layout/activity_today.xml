@@ -43,7 +43,7 @@
     <com.youth.banner.Banner
         android:id="@+id/banner_activity_today"
         android:layout_width="match_parent"
-        android:layout_height="240dp" />
+        android:layout_height="160dp" />
 
     <ScrollView
         android:layout_width="match_parent"
