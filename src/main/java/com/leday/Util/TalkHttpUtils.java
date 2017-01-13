@@ -1,9 +1,13 @@
 package com.leday.Util;
 
 import android.util.Log;
+
+import com.leday.Common.Constant;
 import com.leday.entity.Talk;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +17,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TalkHttpUtils {
-    private static final String URL = "http://op.juhe.cn/robot/index?key=98209c7c466333813006983278b34438&info=";
     /**
      * 发送一个消息，得到返回的消息
+     *
      * @param msg
      * @return talk
      */
@@ -41,7 +45,7 @@ public class TalkHttpUtils {
 
     private static String doGet(String msg) {
         String result = "";
-        String url = URL + msg;
+        String url = Constant.URL_TALK + msg;
         ByteArrayOutputStream baos = null;
         InputStream is = null;
         try {

@@ -8,9 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.leday.R;
 import com.leday.entity.Wechat;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -57,7 +57,7 @@ public class WechatAdapter extends BaseAdapter {
 //        viewHold.mImg.setImageResource(R.drawable.star_title);
         viewHold.mTitle.setText((position + 1) + "、 " + mList.get(position).getTitle());
         viewHold.mAuthor.setText("来自微信: " + mList.get(position).getSource());
-        Picasso.with(mContext).load(mList.get(position).getFirstImg()).into(viewHold.mImg);
+        Glide.with(mContext).load(mList.get(position).getFirstImg()).into(viewHold.mImg);
         return convertView;
     }
 

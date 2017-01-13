@@ -44,19 +44,14 @@
             android:onClick="doWrite" />
     </FrameLayout>
 
-    <!--<android.support.v7.widget.RecyclerView-->
-    <!--android:id="@+id/recycview_activity_note"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent" />-->
-
-    <ListView
-        android:id="@+id/listview_activity_note"
+    <com.jcodecraeer.xrecyclerview.XRecyclerView
+        android:id="@+id/recycler_activity_note"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
-        android:divider="#3f51b5"
-        android:dividerHeight="0.5dp"
-        android:padding="4dp" />
+        android:scrollbarFadeDuration="1"
+        android:scrollbarSize="4dp"
+        android:scrollbars="vertical" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/ftn_activity_note"
@@ -66,7 +61,7 @@
         android:onClick="doChange"
         android:src="@android:drawable/ic_dialog_dialer"
         app:backgroundTint="#3f51b5"
-        app:layout_anchor="@id/listview_activity_note"
+        app:layout_anchor="@id/recycler_activity_note"
         app:layout_anchorGravity="bottom|end"
         app:rippleColor="#ff8dff" />
 

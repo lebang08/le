@@ -10,6 +10,7 @@ import android.widget.ViewFlipper;
 
 import com.leday.R;
 import com.leday.Util.LogUtil;
+import com.youth.banner.Banner;
 
 public class FavoriteDetailActivity extends BaseActivity implements View.OnClickListener {
 
@@ -29,8 +30,8 @@ public class FavoriteDetailActivity extends BaseActivity implements View.OnClick
         local_date = getIntent().getStringExtra("local_date");
         local_id = getIntent().getStringExtra("local_id");
 
-        ViewFlipper mViewFlipper = (ViewFlipper) findViewById(R.id.viewflipper_activity_today);
-        mViewFlipper.setVisibility(View.GONE);
+        Banner mBanner  = (Banner) findViewById(R.id.banner_activity_today);
+        mBanner.setVisibility(View.GONE);
         TextView mTitle = (TextView) findViewById(R.id.txt_Today_title);
         TextView mContent = (TextView) findViewById(R.id.content_activity_today);
         TextView mUnLike = (TextView) findViewById(R.id.txt_Today_like);

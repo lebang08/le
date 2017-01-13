@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.leday.R;
@@ -13,12 +12,12 @@ import com.leday.entity.Note;
 
 import java.util.List;
 
-public class NoteAdapter extends BaseAdapter {
+public class NoteListViewAdapter extends BaseAdapter {
 
     private List<Note> mList;
     private LayoutInflater mInflater;
 
-    public NoteAdapter(Context mContext, List<Note> mList) {
+    public NoteListViewAdapter(Context mContext, List<Note> mList) {
         this.mList = mList;
         mInflater = LayoutInflater.from(mContext);
     }
@@ -57,6 +56,5 @@ public class NoteAdapter extends BaseAdapter {
 
     private class ViewHold {
         private TextView mContent, mTime;
-        private ImageView mImg;
     }
 }

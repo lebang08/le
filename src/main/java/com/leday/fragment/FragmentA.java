@@ -3,7 +3,6 @@ package com.leday.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +10,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.leday.Impl.ListViewHightImpl;
+import com.google.gson.Gson;
+import com.leday.Common.Constant;
+import com.leday.Interface.VolleyInterface;
 import com.leday.R;
 import com.leday.Util.LogUtil;
+import com.leday.Util.VolleyUtils;
+import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.TodayActivity;
 import com.leday.application.MyApplication;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class FragmentA extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class FragmentA extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private FloatingActionButton mFtn;
 
@@ -40,12 +40,13 @@ public class FragmentA extends Fragment implements AdapterView.OnItemClickListen
     private List<Today> mTodayList = new ArrayList<>();
 
     private Calendar mCalendar = Calendar.getInstance();
-    private static final String URL_TODAY = "http://v.juhe.cn/todayOnhistory/queryEvent.php?key=776cbc23ec84837a647a7714a0f06bff&date=";
+
+    private static final String TAG_FRAGMENT_A = "fragmenta";
 
     @Override
     public void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll("fragmenta");
+        MyApplication.getHttpQueue().cancelAll(TAG_FRAGMENT_A);
     }
 
     @Override
@@ -66,28 +67,32 @@ public class FragmentA extends Fragment implements AdapterView.OnItemClickListen
     }
 
     public void getJson() {
+        progressShow(getActivity());
         //获取时间,月和日
         int localMonth = mCalendar.get(Calendar.MONTH);
         int localDay = mCalendar.get(Calendar.DAY_OF_MONTH);
-        String URL_TOTAL = URL_TODAY + (localMonth + 1) + "/" + localDay;
         //请求网络
-        StringRequest todayrequest = new StringRequest(Request.Method.GET, URL_TOTAL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Dosuccess(response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
+        new VolleyUtils(getActivity()).GetRequest(Constant.URL_TODAY + (localMonth + 1) + "/" + localDay
+                , TAG_FRAGMENT_A, new VolleyInterface() {
+                    @Override
+                    public void onSuccess(String response) {
+                        Dosuccess(response);
+                        progressCancel();
+                    }
 
-            }
-        });
-        todayrequest.setTag("fragmenta");
-        MyApplication.getHttpQueue().add(todayrequest);
+                    @Override
+                    public void onFail(VolleyError error) {
+                        progressCancel();
+                    }
+                });
     }
 
-    //请求成功的处理
+    /**
+     * 请求成功的处理
+     */
     private void Dosuccess(String response) {
+        Gson gson = new Gson();
+
         JSONObject obj;
         JSONArray arr;
         Today today;
@@ -99,10 +104,8 @@ public class FragmentA extends Fragment implements AdapterView.OnItemClickListen
             LogUtil.e("URL_TOTAL", arr.toString());
             for (int i = 0; i <= arr.length(); i++) {
                 obj = arr.getJSONObject(i);
-                today = new Today();
-                today.setDate(obj.getString("date"));
-                today.setTitle(obj.getString("title"));
-                today.setE_id(obj.getString("e_id"));
+                //Gson解析对象
+                today = gson.fromJson(obj.toString(), Today.class);
                 merge = (i + 1) + "、 " + today.getDate() + ": " + today.getTitle();
                 mDataList.add(merge);
                 mTodayList.add(today);
@@ -112,7 +115,7 @@ public class FragmentA extends Fragment implements AdapterView.OnItemClickListen
         }
         ArrayAdapter mAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, mDataList);
         mListView.setAdapter(mAdapter);
-        new ListViewHightImpl(mListView).setListViewHeightBasedOnChildren();
+        new ListViewHightHelper(mListView).setListViewHeightBasedOnChildren();
     }
 
     @Override

@@ -8,29 +8,31 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import com.jcodecraeer.xrecyclerview.XRecyclerView;
+import com.leday.Interface.RecyclerItemClickListener;
 import com.leday.R;
 import com.leday.Util.PreferenUtil;
-import com.leday.adapter.NoteAdapter;
+import com.leday.adapter.NoteRecyclerViewAdapter;
 import com.leday.entity.Note;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Administrator on 2016/10/26.
  */
-public class NoteActivity extends BaseActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingListener {
 
-    private ListView mListView;
     private TextView mTitle;
 
-    private List<Note> mList = new ArrayList<>();
-    private NoteAdapter mAdapter;
+    private XRecyclerView mRecyclerView;
+    private NoteRecyclerViewAdapter mAdapter;
+    private ArrayList<Note> mList = new ArrayList<>();
+    private LinearLayoutManager mLinearLayoutmanager;
 
     private SQLiteDatabase mDatabase;
 
@@ -51,15 +53,20 @@ public class NoteActivity extends BaseActivity implements AdapterView.OnItemClic
     }
 
     private void initView() {
+        mRecyclerView = (XRecyclerView) findViewById(R.id.recycler_activity_note);
         mTitle = (TextView) findViewById(R.id.txt_note_title);
-        mListView = (ListView) findViewById(R.id.listview_activity_note);
-        mListView.setOnItemClickListener(this);
-        mListView.setOnItemLongClickListener(this);
+        mLinearLayoutmanager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLinearLayoutmanager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setHasFixedSize(true);
+        //RecyclerView设置Item事件
+        doRecyclerViewItem();
 
         initData();
 
-        mAdapter = new NoteAdapter(this, mList);
-        mListView.setAdapter(mAdapter);
+        mAdapter = new NoteRecyclerViewAdapter(this, mList);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLoadingListener(this);
     }
 
     /**
@@ -131,39 +138,42 @@ public class NoteActivity extends BaseActivity implements AdapterView.OnItemClic
         finish();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent(this, NoteDetailActivity.class);
-        intent.putExtra("local_date", mList.get(position).getTime());
-        intent.putExtra("local_title", mList.get(position).getTitle());
-        intent.putExtra("local_content", mList.get(position).getContent());
-        startActivity(intent);
+    private void doRecyclerViewItem() {
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+            }
+
+            @Override
+            public void onItemLongClick(View view, final int position) {
+                new AlertDialog.Builder(NoteActivity.this)
+                        .setTitle("该操作将删除这条便签")
+                        .setMessage("确认删除吗?")
+                        .setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+                                String local_delete = "DELETE FROM notetb WHERE date = '" + mList.get(position).getTime() + "'";
+                                mDatabase.execSQL(local_delete);
+                                mDatabase.close();
+                                //带动画的效果则不能用notyfyDataSetChanged(),要用notifyItemInserted(position)与notifyItemRemoved(position)
+                                mList.remove(position);
+                                mAdapter.notifyItemRemoved(position);
+                            }
+                        })
+                        .setNegativeButton("取消", null)
+                        .show();
+            }
+        }));
     }
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-        new AlertDialog.Builder(this)
-                .setTitle("该操作将删除这条便签")
-                .setMessage("确认删除吗?")
-                .setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-                        String local_delete = "DELETE FROM notetb WHERE date = '" + mList.get(position).getTime() + "'";
-                        mDatabase.execSQL(local_delete);
-                        mDatabase.close();
+    public void onRefresh() {
+        mRecyclerView.refreshComplete();
+    }
 
-                        //TODO 解决:删除操作后，刷新列表的position出現错乱Bug
-                        //旧数据清楚
-                        mList.clear();
-                        //新数据填充
-                        initData();
-                        //适配器 set change
-                        mAdapter.notifyDataSetChanged();
-                    }
-                })
-                .setNegativeButton("取消", null)
-                .show();
-        return true;
+    @Override
+    public void onLoadMore() {
+        mRecyclerView.loadMoreComplete();
     }
 }

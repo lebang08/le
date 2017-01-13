@@ -3,14 +3,13 @@ package com.leday.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.leday.Impl.ListViewHightImpl;
+import com.leday.View.ListViewHightHelper;
 import com.leday.R;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.StarActivity;
@@ -19,7 +18,7 @@ import com.leday.adapter.StarAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentB extends Fragment implements AdapterView.OnItemClickListener, View.OnClickListener {
+public class FragmentB extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private ListView mListView;
     private List<String> mData = new ArrayList<>();
@@ -56,7 +55,7 @@ public class FragmentB extends Fragment implements AdapterView.OnItemClickListen
         mData.add("双鱼座 ： 2月19日-3月20日");
         StarAdapter mAdapter = new StarAdapter(getActivity(), mData);
         mListView.setAdapter(mAdapter);
-        new ListViewHightImpl(mListView).setListViewHeightBasedOnChildren();
+        new ListViewHightHelper(mListView).setListViewHeightBasedOnChildren();
     }
 
     @Override

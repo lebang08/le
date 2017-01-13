@@ -1,25 +1,22 @@
-package com.leday.Impl;
+package com.leday.View;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.leday.Util.ListViewHightHelper;
-
 /**
  * Created by Administrator on 2016/6/8.
  * 解决嵌套ListView 和 Scrollview的问题
  */
-public class ListViewHightImpl implements ListViewHightHelper {
+public class ListViewHightHelper {
 
     private ListView mListView;
 
-    public ListViewHightImpl(ListView listview) {
+    public ListViewHightHelper(ListView listview) {
         mListView = listview;
     }
 
-    @Override
     public void setListViewHeightBasedOnChildren() {
         ListAdapter listAdapter = mListView.getAdapter();
         if (listAdapter == null) {
