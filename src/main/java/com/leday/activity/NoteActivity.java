@@ -153,11 +153,11 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-                                String local_delete = "DELETE FROM notetb WHERE date = '" + mList.get(position).getTime() + "'";
+                                String local_delete = "DELETE FROM notetb WHERE date = '" + mList.get(position - 1).getTime() + "'";
                                 mDatabase.execSQL(local_delete);
                                 mDatabase.close();
                                 //带动画的效果则不能用notyfyDataSetChanged(),要用notifyItemInserted(position)与notifyItemRemoved(position)
-                                mList.remove(position);
+                                mList.remove(position - 1);
                                 mAdapter.notifyItemRemoved(position);
                             }
                         })

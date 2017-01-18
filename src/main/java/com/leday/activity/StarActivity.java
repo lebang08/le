@@ -8,16 +8,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.leday.Common.Constant;
-import com.leday.Interface.OkHttpInterface;
 import com.leday.R;
-import com.leday.Util.OkHttpUtils;
+import com.leday.Util.LogUtil;
 import com.leday.Util.ToastUtil;
-import com.leday.application.MyApplication;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.cache.CacheMode;
+import com.lzy.okgo.callback.StringCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Response;
@@ -35,7 +34,7 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll(Tag_STAR_ACTIVITY);
+        OkGo.getInstance().cancelTag(Tag_STAR_ACTIVITY);
     }
 
     @Override
@@ -124,22 +123,18 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
 
     private void getJson() {
         progressdialogShow(this);
-        new OkHttpUtils().OkHttpGet(this, Constant.URL_STAR + localstar + "&type=" + localtime, new OkHttpInterface() {
-            @Override
-            public void onSuccess(Response response) {
-                try {
-                    DoSuccess(response.body().string());
-                    progressCancel();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFail(Call call) {
-                progressCancel();
-            }
-        });
+        OkGo.get(Constant.URL_STAR + localstar + "&type=" + localtime)
+                .tag(Tag_STAR_ACTIVITY)
+                .cacheKey("cacheKey")            // 设置当前请求的缓存key,建议每个不同功能的请求设置一个
+                .cacheMode(CacheMode.DEFAULT)    // 缓存模式，详细请看缓存介绍
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        LogUtil.i("succ = " + s);
+                        DoSuccess(s);
+                        progressCancel();
+                    }
+                });
     }
 
     private void DoSuccess(String response) {

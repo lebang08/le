@@ -22,15 +22,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.android.volley.Request.Method;
-import com.android.volley.Response;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.leday.R;
-import com.leday.application.MyApplication;
 import com.leday.entity.UpdateInfo;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,6 +36,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import okhttp3.Call;
 
 public class UpdateUtil {
 
@@ -75,6 +73,7 @@ public class UpdateUtil {
                 String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
                 JSONObject obj;
                 obj = new JSONObject(parseString);
+
                 if (obj.getString("code").equals("0")) {
                     JSONArray data = obj.getJSONArray("data");
                     obj = data.getJSONObject(0);
@@ -111,21 +110,35 @@ public class UpdateUtil {
     };
 
     public void checkUpdate() {
-        StringRequest request = new StringRequest(Method.GET, URL_SERVE, new Listener<String>() {
+        OkGo.get(URL_SERVE).execute(new StringCallback() {
             @Override
-            public void onResponse(String response) {
+            public void onSuccess(String s, Call call, okhttp3.Response response) {
                 Message msg = Message.obtain();
-                msg.obj = response;
+                msg.obj = s;
                 mGetVersionHandler.sendMessage(msg);
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                LogUtil.i("volleyError = " + volleyError.getMessage());
+            public void onError(Call call, okhttp3.Response response, Exception e) {
+                super.onError(call, response, e);
+                LogUtil.i("error =  update");
             }
         });
-        request.setTag("updateutil");
-        MyApplication.getHttpQueue().add(request);
+//        StringRequest request = new StringRequest(Method.GET, URL_SERVE, new Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                Message msg = Message.obtain();
+//                msg.obj = response;
+//                mGetVersionHandler.sendMessage(msg);
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError volleyError) {
+//                LogUtil.i("volleyError = " + volleyError.getMessage());
+//            }
+//        });
+//        request.setTag("updateutil");
+//        MyApplication.getHttpQueue().add(request);
     }
 
     //boolean比较本地版本是否需要更新
@@ -178,7 +191,6 @@ public class UpdateUtil {
     private void showDownloadDialog() {     //显示下载进度
         AlertDialog.Builder builder = new Builder(mcontext, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
         builder.setTitle("下载中");
-
         View view = LayoutInflater.from(mcontext).inflate(R.layout.dialog_progress, null);
         mProgressBar = (ProgressBar) view.findViewById(R.id.update_progress);
         builder.setView(view);

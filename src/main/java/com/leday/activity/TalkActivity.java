@@ -20,6 +20,7 @@ import com.leday.Util.ToastUtil;
 import com.leday.adapter.TalkAdapter;
 import com.leday.application.MyApplication;
 import com.leday.entity.Talk;
+import com.lzy.okgo.OkGo;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class TalkActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll("GET");
+        OkGo.getInstance().cancelTag("GET");
     }
 
     @Override

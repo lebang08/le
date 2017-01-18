@@ -9,14 +9,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.leday.R;
 import com.leday.Util.GlideImageLoader;
 import com.leday.Util.PreferenUtil;
-import com.leday.application.MyApplication;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
@@ -26,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import okhttp3.Call;
 
 public class TodayActivity extends BaseActivity implements View.OnClickListener {
 
@@ -42,7 +41,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
     @Override
     protected void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll("todayactivity");
+        OkGo.getInstance().cancelTag("todayactivity");
         banner.stopAutoPlay();
     }
 
@@ -80,20 +79,14 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
 
     private void getJson() {
         progressdialogShow(this);
-        StringRequest todayactivityrequest = new StringRequest(Request.Method.GET, URL_TODAY + local_id, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Dosuccess(response);
-                progressCancel();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                progressCancel();
-            }
-        });
-        todayactivityrequest.setTag("todayactivity");
-        MyApplication.getHttpQueue().add(todayactivityrequest);
+        OkGo.get(URL_TODAY + local_id).tag("todayactivity")
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(String s, Call call, okhttp3.Response response) {
+                        Dosuccess(s);
+                        progressCancel();
+                    }
+                });
     }
 
     private void Dosuccess(String response) {

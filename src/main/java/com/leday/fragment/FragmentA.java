@@ -10,18 +10,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.leday.Common.Constant;
-import com.leday.Interface.VolleyInterface;
 import com.leday.R;
 import com.leday.Util.LogUtil;
-import com.leday.Util.VolleyUtils;
 import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.TodayActivity;
-import com.leday.application.MyApplication;
 import com.leday.entity.Today;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +28,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class FragmentA extends BaseFragment implements AdapterView.OnItemClickListener, View.OnClickListener {
 
@@ -46,7 +47,7 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
     @Override
     public void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll(TAG_FRAGMENT_A);
+        OkGo.getInstance().cancelTag(TAG_FRAGMENT_A);
     }
 
     @Override
@@ -72,16 +73,12 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
         int localMonth = mCalendar.get(Calendar.MONTH);
         int localDay = mCalendar.get(Calendar.DAY_OF_MONTH);
         //请求网络
-        new VolleyUtils(getActivity()).GetRequest(Constant.URL_TODAY + (localMonth + 1) + "/" + localDay
-                , TAG_FRAGMENT_A, new VolleyInterface() {
+        OkGo.get(Constant.URL_TODAY + (localMonth + 1) + "/" + localDay)
+                .tag(TAG_FRAGMENT_A)
+                .execute(new StringCallback() {
                     @Override
-                    public void onSuccess(String response) {
-                        Dosuccess(response);
-                        progressCancel();
-                    }
-
-                    @Override
-                    public void onFail(VolleyError error) {
+                    public void onSuccess(String s, Call call, Response response) {
+                        Dosuccess(s);
                         progressCancel();
                     }
                 });

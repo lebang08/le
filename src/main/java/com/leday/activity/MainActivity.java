@@ -17,7 +17,7 @@ import com.leday.Util.LogUtil;
 import com.leday.Util.PreferenUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
-import com.leday.application.MyApplication;
+import com.lzy.okgo.OkGo;
 import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
@@ -61,7 +61,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     protected void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll("updateutil");
+        OkGo.getInstance().cancelTag("updateutil");
     }
 
     @Override

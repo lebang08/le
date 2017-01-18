@@ -9,17 +9,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.android.volley.VolleyError;
 import com.leday.Common.Constant;
-import com.leday.Interface.VolleyInterface;
 import com.leday.R;
-import com.leday.Util.VolleyUtils;
 import com.leday.View.ListViewHightHelper;
 import com.leday.activity.NoteActivity;
 import com.leday.activity.WebViewActivity;
 import com.leday.adapter.WechatAdapter;
-import com.leday.application.MyApplication;
 import com.leday.entity.Wechat;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +25,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Response;
 
 public class FragmentC extends BaseFragment implements
         AdapterView.OnItemClickListener, View.OnClickListener {
@@ -41,7 +42,7 @@ public class FragmentC extends BaseFragment implements
     @Override
     public void onStop() {
         super.onStop();
-        MyApplication.getHttpQueue().cancelAll(TAG_FRAGMENT_C);
+        OkGo.getInstance().cancelTag(TAG_FRAGMENT_C);
     }
 
     @Override
@@ -65,18 +66,15 @@ public class FragmentC extends BaseFragment implements
      */
     private void initEvent() {
         progressShow(getActivity());
-        new VolleyUtils(getActivity()).GetRequest(Constant.URL_WECHAT, TAG_FRAGMENT_C, new VolleyInterface() {
-            @Override
-            public void onSuccess(String response) {
-                Dosuccess(response);
-                progressCancel();
-            }
-
-            @Override
-            public void onFail(VolleyError error) {
-                progressCancel();
-            }
-        });
+        OkGo.get(Constant.URL_WECHAT)
+                .tag(TAG_FRAGMENT_C)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(String s, Call call, Response response) {
+                        Dosuccess(s);
+                        progressCancel();
+                    }
+                });
     }
 
     /**
