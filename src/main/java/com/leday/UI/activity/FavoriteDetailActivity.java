@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -6,10 +6,9 @@ import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.ViewFlipper;
 
+import com.leday.BaseActivity;
 import com.leday.R;
-import com.leday.Util.LogUtil;
 import com.youth.banner.Banner;
 
 public class FavoriteDetailActivity extends BaseActivity implements View.OnClickListener {

@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -14,10 +14,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
+import com.leday.BaseActivity;
 import com.leday.Interface.RecyclerItemClickListener;
 import com.leday.R;
 import com.leday.Util.PreferenUtil;
-import com.leday.adapter.NoteRecyclerViewAdapter;
+import com.leday.UI.adapter.NoteAdapter;
 import com.leday.entity.Note;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
     private TextView mTitle;
 
     private XRecyclerView mRecyclerView;
-    private NoteRecyclerViewAdapter mAdapter;
+    private NoteAdapter mAdapter;
     private ArrayList<Note> mList = new ArrayList<>();
     private LinearLayoutManager mLinearLayoutmanager;
 
@@ -64,7 +65,7 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
 
         initData();
 
-        mAdapter = new NoteRecyclerViewAdapter(this, mList);
+        mAdapter = new NoteAdapter(this, mList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLoadingListener(this);
     }

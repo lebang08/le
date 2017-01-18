@@ -5,6 +5,9 @@ package com.leday.Common;
  */
 public class Constant {
 
+    public static final int REFRESH_DATA = 0;
+    public static final int LOAD_MORE_DATA = 1;
+
     //今时今往
     public static final String URL_TODAY = "http://v.juhe.cn/todayOnhistory/queryEvent.php?key=776cbc23ec84837a647a7714a0f06bff&date=";
 

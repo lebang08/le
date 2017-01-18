@@ -1,4 +1,4 @@
-package com.leday.fragment;
+package com.leday;
 
 import android.app.ProgressDialog;
 import android.content.Context;

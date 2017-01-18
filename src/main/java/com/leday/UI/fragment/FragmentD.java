@@ -1,4 +1,4 @@
-package com.leday.fragment;
+package com.leday.UI.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,15 +14,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.leday.BaseFragment;
 import com.leday.R;
 import com.leday.Util.PreferenUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
 import com.leday.View.ListViewHightHelper;
-import com.leday.activity.FavoriteActivity;
-import com.leday.activity.NoteActivity;
-import com.leday.activity.TalkActivity;
-import com.leday.activity.WebFavoriteActivity;
+import com.leday.UI.activity.FavoriteActivity;
+import com.leday.UI.activity.NoteActivity;
+import com.leday.UI.activity.TalkActivity;
+import com.leday.UI.activity.WebFavoriteActivity;
 
 import java.util.ArrayList;
 import java.util.List;

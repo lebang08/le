@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.TextView;
 
+import com.leday.BaseActivity;
 import com.leday.R;
 
 import java.util.Timer;
@@ -35,7 +36,7 @@ public class SplashActivity extends BaseActivity implements View.OnClickListener
             public void run() {
                 toMain();
             }
-        }, 2000);
+        }, 1500);
     }
 
     private void initView() {

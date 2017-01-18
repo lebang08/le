@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.leday.BaseActivity;
 import com.leday.Common.Constant;
 import com.leday.R;
 import com.leday.Util.LogUtil;

@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.app.DatePickerDialog;
 import android.content.ContentValues;

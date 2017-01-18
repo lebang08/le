@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -13,12 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.leday.BaseActivity;
 import com.leday.R;
 import com.leday.Util.PreferenUtil;
 import com.leday.Util.TalkHttpUtils;
 import com.leday.Util.ToastUtil;
-import com.leday.adapter.TalkAdapter;
-import com.leday.application.MyApplication;
+import com.leday.UI.adapter.TalkAdapter;
 import com.leday.entity.Talk;
 import com.lzy.okgo.OkGo;
 

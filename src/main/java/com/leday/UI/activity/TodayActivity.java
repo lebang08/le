@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.leday.BaseActivity;
 import com.leday.R;
 import com.leday.Util.GlideImageLoader;
 import com.leday.Util.PreferenUtil;
@@ -111,6 +112,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
             banner.setImageLoader(new GlideImageLoader());
             //设置图片集合
             banner.setImages(imgList);
+            banner.setDelayTime(3000);
             banner.setIndicatorGravity(BannerConfig.RIGHT);
             banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
             banner.setBannerAnimation(Transformer.ZoomOutSlide);

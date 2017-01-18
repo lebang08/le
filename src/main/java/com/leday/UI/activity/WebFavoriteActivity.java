@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.leday.BaseActivity;
 import com.leday.R;
 import com.leday.Util.LogUtil;
 import com.leday.Util.PreferenUtil;

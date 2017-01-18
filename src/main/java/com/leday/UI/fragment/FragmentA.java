@@ -1,4 +1,4 @@
-package com.leday.fragment;
+package com.leday.UI.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,12 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.gson.Gson;
+import com.leday.BaseFragment;
 import com.leday.Common.Constant;
 import com.leday.R;
 import com.leday.Util.LogUtil;
 import com.leday.View.ListViewHightHelper;
-import com.leday.activity.NoteActivity;
-import com.leday.activity.TodayActivity;
+import com.leday.UI.activity.NoteActivity;
+import com.leday.UI.activity.TodayActivity;
 import com.leday.entity.Today;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;

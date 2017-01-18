@@ -1,4 +1,4 @@
-package com.leday.activity;
+package com.leday.UI.activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,10 +15,10 @@ import com.leday.R;
 import com.leday.Util.NetUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
-import com.leday.fragment.FragmentA;
-import com.leday.fragment.FragmentB;
-import com.leday.fragment.FragmentC;
-import com.leday.fragment.FragmentD;
+import com.leday.UI.fragment.FragmentA;
+import com.leday.UI.fragment.FragmentB;
+import com.leday.UI.fragment.FragmentC;
+import com.leday.UI.fragment.FragmentD;
 
 import java.util.ArrayList;
 import java.util.List;

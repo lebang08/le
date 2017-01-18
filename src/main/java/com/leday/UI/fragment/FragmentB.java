@@ -1,4 +1,4 @@
-package com.leday.fragment;
+package com.leday.UI.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +9,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.leday.BaseFragment;
 import com.leday.View.ListViewHightHelper;
 import com.leday.R;
-import com.leday.activity.NoteActivity;
-import com.leday.activity.StarActivity;
-import com.leday.adapter.StarAdapter;
+import com.leday.UI.activity.NoteActivity;
+import com.leday.UI.activity.StarActivity;
+import com.leday.UI.adapter.StarAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

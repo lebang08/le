@@ -1,4 +1,4 @@
-package com.leday.adapter;
+package com.leday.UI.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

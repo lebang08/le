@@ -1,11 +1,10 @@
-package com.leday.activity;
+package com.leday;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.leday.Util.ActivityManager;
 import com.leday.Util.LogUtil;
 import com.leday.Util.NetUtil;
 import com.leday.Util.ToastUtil;
@@ -67,5 +66,4 @@ public class BaseActivity extends Activity {
         }
         mProgressDialog.cancel();
     }
-
 }
