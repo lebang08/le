@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.leday.R;
@@ -42,6 +43,7 @@ import okhttp3.Call;
 public class UpdateUtil {
 
     private ProgressBar mProgressBar;
+    private TextView mProgressTxt;
     private Dialog mDownLoadDialog;
 
     private final String URL_SERVE = "http://www.iyuce.com/Scripts/leday.json";
@@ -70,9 +72,9 @@ public class UpdateUtil {
         public void handleMessage(Message msg) {
             try {
                 String jsonString = (String) msg.obj;
-                String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
+//                String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
                 JSONObject obj;
-                obj = new JSONObject(parseString);
+                obj = new JSONObject(jsonString);
 
                 if (obj.getString("code").equals("0")) {
                     JSONArray data = obj.getJSONArray("data");
@@ -100,6 +102,7 @@ public class UpdateUtil {
             switch (msg.what) {
                 case DOWNLOADING:
                     mProgressBar.setProgress(mProgress);
+                    mProgressTxt.setText((Integer) msg.obj + "%");
                     break;
                 case DOWNLOAD_FINISH:
                     mDownLoadDialog.dismiss();
@@ -116,6 +119,7 @@ public class UpdateUtil {
                 Message msg = Message.obtain();
                 msg.obj = s;
                 mGetVersionHandler.sendMessage(msg);
+                LogUtil.i("service do update");
             }
 
             @Override
@@ -124,21 +128,6 @@ public class UpdateUtil {
                 LogUtil.i("error =  update");
             }
         });
-//        StringRequest request = new StringRequest(Method.GET, URL_SERVE, new Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                Message msg = Message.obtain();
-//                msg.obj = response;
-//                mGetVersionHandler.sendMessage(msg);
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                LogUtil.i("volleyError = " + volleyError.getMessage());
-//            }
-//        });
-//        request.setTag("updateutil");
-//        MyApplication.getHttpQueue().add(request);
     }
 
     //boolean比较本地版本是否需要更新
@@ -193,6 +182,7 @@ public class UpdateUtil {
         builder.setTitle("下载中");
         View view = LayoutInflater.from(mcontext).inflate(R.layout.dialog_progress, null);
         mProgressBar = (ProgressBar) view.findViewById(R.id.update_progress);
+        mProgressTxt = (TextView) view.findViewById(R.id.update_text);
         builder.setView(view);
         builder.setNegativeButton("取消下载", new OnClickListener() {
             @Override
@@ -210,6 +200,23 @@ public class UpdateUtil {
 
     //文件下载的操作(1.存储卡/2.输入流)
     private void downloadAPK() {
+//        OkGo.get(updateInfo.getApkurl())
+//                .execute(new FileCallback() {
+//                    @Override
+//                    public void onSuccess(File file, Call call, Response response) {
+//                        LogUtil.i("file = " + file.toString());
+//                        mSavePath = file.toString();
+//                        mDownLoadDialog.dismiss();
+//                        installAPK(file);
+//                    }
+//
+//                    @Override
+//                    public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+//                        super.downloadProgress(currentSize, totalSize, progress, networkSpeed);
+//                        LogUtil.i("progress = " + progress + "====" + currentSize + "/" + totalSize + "||networkSpeed = " + networkSpeed);
+//                    }
+//                });
+
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -237,7 +244,10 @@ public class UpdateUtil {
                             count += numread;
                             mProgress = (int) (((float) count / length) * 100);
                             // 更新进度条
-                            mUpdateProgressHandler.sendEmptyMessage(DOWNLOADING);
+                            Message msg = new Message();
+                            msg.what = DOWNLOADING;
+                            msg.obj = mProgress;
+                            mUpdateProgressHandler.sendMessage(msg);
                             // 下载完成
                             if (numread < 0) {
                                 mUpdateProgressHandler.sendEmptyMessage(DOWNLOAD_FINISH);

@@ -1,5 +1,6 @@
 package com.leday.UI.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,13 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.leday.R;
-import com.leday.Util.NetUtil;
-import com.leday.Util.ToastUtil;
-import com.leday.Util.UpdateUtil;
+import com.leday.Service.UpdateService;
 import com.leday.UI.fragment.FragmentA;
 import com.leday.UI.fragment.FragmentB;
 import com.leday.UI.fragment.FragmentC;
 import com.leday.UI.fragment.FragmentD;
+import com.leday.Util.NetUtil;
+import com.leday.Util.ToastUtil;
+import com.leday.Util.UpdateUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,8 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
         } else {
             if ((System.currentTimeMillis() - lastTime) < 2000) {
                 this.finish();
+                Intent intent = new Intent(this, UpdateService.class);
+                this.stopService(intent);
             } else {
                 ToastUtil.showMessage(this, "再按一次退出程序");
                 lastTime = System.currentTimeMillis();
@@ -56,8 +60,11 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab);
 
-        //检测自动更新
+//        检测自动更新
+        Intent intent = new Intent(this, UpdateService.class);
+        startService(intent);
         new UpdateUtil(this).checkUpdate();
+
         initTab();
         initView();
 

@@ -24,31 +24,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity-->
-        <!--android:name=".UI.activity.AnimationActivity"-->
-        <!--android:label="@string/app_name"-->
-        <!--android:theme="@style/Theme.Design.Light.NoActionBar" />-->
-        <!--<activity-->
-        <!--android:name=".UI.activity.MainActivity"-->
-        <!--android:theme="@style/AppTheme.NoActionBar" />-->
+        <!-- <activity -->
+        <!-- android:name=".UI.activity.AnimationActivity" -->
+        <!-- android:label="@string/app_name" -->
+        <!-- android:theme="@style/Theme.Design.Light.NoActionBar" /> -->
+        <!-- <activity -->
+        <!-- android:name=".UI.activity.MainActivity" -->
+        <!-- android:theme="@style/AppTheme.NoActionBar" /> -->
         <activity
             android:name=".UI.activity.TabActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity android:name=".BaseActivity" />
-        <!--主Tab类-->
+        <!-- 主Tab类 -->
         <activity android:name=".UI.activity.TodayActivity" />
         <activity android:name=".UI.activity.StarActivity" />
         <activity android:name=".UI.activity.WebViewActivity" />
         <activity android:name=".UI.activity.TalkActivity" />
-
         <activity android:name=".UI.activity.FavoriteActivity" />
         <activity android:name=".UI.activity.WebFavoriteActivity" />
         <activity android:name=".UI.activity.FavoriteDetailActivity" />
         <activity android:name=".UI.activity.WebFavoriteDetailActivity" />
         <activity android:name=".UI.activity.NoteActivity" />
         <activity android:name=".UI.activity.NoteDetailActivity" />
-        <!--<activity android:name=".activity.Note_Activity" />-->
+        <!-- <activity android:name=".activity.Note_Activity" /> -->
+
+        <service
+            android:name=".Service.UpdateService"
+            android:enabled="true"
+            android:exported="true" />
 
         <meta-data
             android:name="UMENG_APPKEY"
