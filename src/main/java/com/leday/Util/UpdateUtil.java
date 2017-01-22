@@ -21,16 +21,12 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.android.volley.Request.Method;
-import com.android.volley.Response;
-import com.android.volley.Response.Listener;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.google.gson.Gson;
 import com.leday.R;
-import com.leday.application.MyApplication;
 import com.leday.entity.UpdateInfo;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,9 +37,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import okhttp3.Call;
+
 public class UpdateUtil {
 
     private ProgressBar mProgressBar;
+    private TextView mProgressTxt;
     private Dialog mDownLoadDialog;
 
     private final String URL_SERVE = "http://www.iyuce.com/Scripts/leday.json";
@@ -68,39 +67,12 @@ public class UpdateUtil {
     }
 
     @SuppressLint("HandlerLeak")
-    private Handler mGetVersionHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            try {
-                String jsonString = (String) msg.obj;
-                String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
-                JSONObject obj;
-                obj = new JSONObject(parseString);
-                if (obj.getString("code").equals("0")) {
-                    JSONArray data = obj.getJSONArray("data");
-                    obj = data.getJSONObject(0);
-                    Gson gson = new Gson();
-                    updateInfo = gson.fromJson(obj.toString(), UpdateInfo.class);
-                    LogUtil.e("updateInfo", "updateInfo = " + updateInfo.toString());
-                }
-                if (isUpdate(updateInfo.getVersion())) {
-                    showNoticeDialog();
-                } else {
-                    if (!TextUtils.isEmpty(mAlreayNew)) {
-                        ToastUtil.showMessage(mcontext, "已经是最新版本v" + updateInfo.getVersion() + "啦");
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    @SuppressLint("HandlerLeak")
     private Handler mUpdateProgressHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case DOWNLOADING:
                     mProgressBar.setProgress(mProgress);
+                    mProgressTxt.setText((Integer) msg.obj + "%");
                     break;
                 case DOWNLOAD_FINISH:
                     mDownLoadDialog.dismiss();
@@ -111,21 +83,48 @@ public class UpdateUtil {
     };
 
     public void checkUpdate() {
-        StringRequest request = new StringRequest(Method.GET, URL_SERVE, new Listener<String>() {
+        OkGo.get(URL_SERVE).execute(new StringCallback() {
             @Override
-            public void onResponse(String response) {
-                Message msg = Message.obtain();
-                msg.obj = response;
-                mGetVersionHandler.sendMessage(msg);
+            public void onSuccess(String s, Call call, okhttp3.Response response) {
+                doSuccess(s);
+                LogUtil.i("service do update");
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                LogUtil.i("volleyError = " + volleyError.getMessage());
+            public void onError(Call call, okhttp3.Response response, Exception e) {
+                super.onError(call, response, e);
+                LogUtil.i("error =  update");
             }
         });
-        request.setTag("updateutil");
-        MyApplication.getHttpQueue().add(request);
+    }
+
+    private void doSuccess(String s) {
+        try {
+//                String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
+            JSONObject obj;
+            obj = new JSONObject(s);
+            if (obj.getString("code").equals("0")) {
+                JSONArray data = obj.getJSONArray("data");
+                obj = data.getJSONObject(0);
+//                Gson gson = new Gson();
+//                updateInfo = gson.fromJson(obj.toString(), UpdateInfo.class);
+                updateInfo = new UpdateInfo();
+                updateInfo.setTitle(obj.getString("title"));
+                updateInfo.setMessage(obj.getString("message"));
+                updateInfo.setVersion(obj.getString("version"));
+                updateInfo.setApkurl(obj.getString("apkurl"));
+                LogUtil.e("updateInfo", "updateInfo = " + updateInfo.toString());
+            }
+            if (isUpdate(updateInfo.getVersion())) {
+                showNoticeDialog();
+            } else {
+                if (!TextUtils.isEmpty(mAlreayNew)) {
+                    ToastUtil.showMessage(mcontext, "已经是最新版本v" + updateInfo.getVersion() + "啦");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //boolean比较本地版本是否需要更新
@@ -178,9 +177,9 @@ public class UpdateUtil {
     private void showDownloadDialog() {     //显示下载进度
         AlertDialog.Builder builder = new Builder(mcontext, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
         builder.setTitle("下载中");
-
         View view = LayoutInflater.from(mcontext).inflate(R.layout.dialog_progress, null);
         mProgressBar = (ProgressBar) view.findViewById(R.id.update_progress);
+        mProgressTxt = (TextView) view.findViewById(R.id.update_text);
         builder.setView(view);
         builder.setNegativeButton("取消下载", new OnClickListener() {
             @Override
@@ -198,6 +197,23 @@ public class UpdateUtil {
 
     //文件下载的操作(1.存储卡/2.输入流)
     private void downloadAPK() {
+//        OkGo.get(updateInfo.getApkurl())
+//                .execute(new FileCallback() {
+//                    @Override
+//                    public void onSuccess(File file, Call call, Response response) {
+//                        LogUtil.i("file = " + file.toString());
+//                        mSavePath = file.toString();
+//                        mDownLoadDialog.dismiss();
+//                        installAPK(file);
+//                    }
+//
+//                    @Override
+//                    public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+//                        super.downloadProgress(currentSize, totalSize, progress, networkSpeed);
+//                        LogUtil.i("progress = " + progress + "====" + currentSize + "/" + totalSize + "||networkSpeed = " + networkSpeed);
+//                    }
+//                });
+
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -225,7 +241,10 @@ public class UpdateUtil {
                             count += numread;
                             mProgress = (int) (((float) count / length) * 100);
                             // 更新进度条
-                            mUpdateProgressHandler.sendEmptyMessage(DOWNLOADING);
+                            Message msg = new Message();
+                            msg.what = DOWNLOADING;
+                            msg.obj = mProgress;
+                            mUpdateProgressHandler.sendMessage(msg);
                             // 下载完成
                             if (numread < 0) {
                                 mUpdateProgressHandler.sendEmptyMessage(DOWNLOAD_FINISH);
