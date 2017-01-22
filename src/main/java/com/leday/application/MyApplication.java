@@ -6,8 +6,6 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
 
-import java.util.logging.Level;
-
 /**
  * Created by LeBang on 2016/6/8.
  */
@@ -36,7 +34,7 @@ public class MyApplication extends Application {
 
                     // 打开该调试开关,打印级别INFO,并不是异常,是为了显眼,不需要就不要加入该行
                     // 最后的true表示是否打印okgo的内部异常，一般打开方便调试错误
-                    .debug("OkGo", Level.INFO, true)
+                    //.debug("linG", Level.INFO, true)
 
                     //如果使用默认的 60秒,以下三行也不需要传
                     .setConnectTimeout(OkGo.DEFAULT_MILLISECONDS)  //全局的连接超时时间

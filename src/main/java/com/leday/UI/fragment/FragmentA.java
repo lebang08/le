@@ -10,14 +10,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.google.gson.Gson;
 import com.leday.BaseFragment;
 import com.leday.Common.Constant;
 import com.leday.R;
-import com.leday.Util.LogUtil;
-import com.leday.View.ListViewHightHelper;
 import com.leday.UI.activity.NoteActivity;
 import com.leday.UI.activity.TodayActivity;
+import com.leday.Util.LogUtil;
+import com.leday.View.ListViewHightHelper;
 import com.leday.entity.Today;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -89,8 +88,7 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
      * 请求成功的处理
      */
     private void Dosuccess(String response) {
-        Gson gson = new Gson();
-
+//        Gson gson = new Gson();
         JSONObject obj;
         JSONArray arr;
         Today today;
@@ -103,7 +101,11 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
             for (int i = 0; i <= arr.length(); i++) {
                 obj = arr.getJSONObject(i);
                 //Gson解析对象
-                today = gson.fromJson(obj.toString(), Today.class);
+                today = new Today();
+                today.setDate(obj.getString("date"));
+                today.setTitle(obj.getString("title"));
+                today.setE_id(obj.getString("e_id"));
+//                today = gson.fromJson(obj.toString(), Today.class);
                 merge = (i + 1) + "、 " + today.getDate() + ": " + today.getTitle();
                 mDataList.add(merge);
                 mTodayList.add(today);

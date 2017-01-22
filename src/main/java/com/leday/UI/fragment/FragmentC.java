@@ -4,15 +4,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leday.BaseFragment;
 import com.leday.Common.Constant;
 import com.leday.R;
 import com.leday.UI.adapter.WechatAdapter;
+import com.leday.Util.LogUtil;
 import com.leday.entity.Wechat;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -35,6 +38,8 @@ public class FragmentC extends BaseFragment implements XRecyclerView.LoadingList
 
     private static final String TAG_FRAGMENT_C = "fragmentc";
     private int page_num = 1;
+
+    private DisplayMetrics mDisplayMetric;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -62,6 +67,7 @@ public class FragmentC extends BaseFragment implements XRecyclerView.LoadingList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_c, container, false);
+        initDisplay();
         initView(view);
         requestData(Constant.REFRESH_DATA);
         return view;
@@ -74,8 +80,22 @@ public class FragmentC extends BaseFragment implements XRecyclerView.LoadingList
         mAdapter = new WechatAdapter(getActivity(), wechatList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLoadingListener(this);
-        View headerView = LayoutInflater.from(getActivity()).inflate(R.layout.header_view, null, false);
+        View headerView = LayoutInflater.from(getActivity()).inflate(R.layout.header_view, (ViewGroup) view.findViewById(android.R.id.content), false);
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+        params.width = mDisplayMetric.widthPixels;
+        params.height = mDisplayMetric.widthPixels / 5 * 2;
+        headerView.setLayoutParams(params);
         mRecyclerView.addHeaderView(headerView);
+    }
+
+
+    private void initDisplay() {
+        mDisplayMetric = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetric);
+        LogUtil.e("i",
+                mDisplayMetric.heightPixels + "," + mDisplayMetric.widthPixels + "。dpi（X和Y是应该是相同的）xdpi= "
+                        + mDisplayMetric.xdpi + ",ydpi = " + mDisplayMetric.ydpi + "。desityx（x的总密度）："
+                        + mDisplayMetric.densityDpi + "，密度" + mDisplayMetric.density);
     }
 
     /**

@@ -23,7 +23,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.leday.R;
 import com.leday.entity.UpdateInfo;
 import com.lzy.okgo.OkGo;
@@ -68,35 +67,6 @@ public class UpdateUtil {
     }
 
     @SuppressLint("HandlerLeak")
-    private Handler mGetVersionHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            try {
-                String jsonString = (String) msg.obj;
-//                String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
-                JSONObject obj;
-                obj = new JSONObject(jsonString);
-
-                if (obj.getString("code").equals("0")) {
-                    JSONArray data = obj.getJSONArray("data");
-                    obj = data.getJSONObject(0);
-                    Gson gson = new Gson();
-                    updateInfo = gson.fromJson(obj.toString(), UpdateInfo.class);
-                    LogUtil.e("updateInfo", "updateInfo = " + updateInfo.toString());
-                }
-                if (isUpdate(updateInfo.getVersion())) {
-                    showNoticeDialog();
-                } else {
-                    if (!TextUtils.isEmpty(mAlreayNew)) {
-                        ToastUtil.showMessage(mcontext, "已经是最新版本v" + updateInfo.getVersion() + "啦");
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    @SuppressLint("HandlerLeak")
     private Handler mUpdateProgressHandler = new Handler() {
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -116,9 +86,7 @@ public class UpdateUtil {
         OkGo.get(URL_SERVE).execute(new StringCallback() {
             @Override
             public void onSuccess(String s, Call call, okhttp3.Response response) {
-                Message msg = Message.obtain();
-                msg.obj = s;
-                mGetVersionHandler.sendMessage(msg);
+                doSuccess(s);
                 LogUtil.i("service do update");
             }
 
@@ -128,6 +96,35 @@ public class UpdateUtil {
                 LogUtil.i("error =  update");
             }
         });
+    }
+
+    private void doSuccess(String s) {
+        try {
+//                String parseString = new String(jsonString.getBytes("ISO-8859-1"), "utf-8");
+            JSONObject obj;
+            obj = new JSONObject(s);
+            if (obj.getString("code").equals("0")) {
+                JSONArray data = obj.getJSONArray("data");
+                obj = data.getJSONObject(0);
+//                Gson gson = new Gson();
+//                updateInfo = gson.fromJson(obj.toString(), UpdateInfo.class);
+                updateInfo = new UpdateInfo();
+                updateInfo.setTitle(obj.getString("title"));
+                updateInfo.setMessage(obj.getString("message"));
+                updateInfo.setVersion(obj.getString("version"));
+                updateInfo.setApkurl(obj.getString("apkurl"));
+                LogUtil.e("updateInfo", "updateInfo = " + updateInfo.toString());
+            }
+            if (isUpdate(updateInfo.getVersion())) {
+                showNoticeDialog();
+            } else {
+                if (!TextUtils.isEmpty(mAlreayNew)) {
+                    ToastUtil.showMessage(mcontext, "已经是最新版本v" + updateInfo.getVersion() + "啦");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //boolean比较本地版本是否需要更新
