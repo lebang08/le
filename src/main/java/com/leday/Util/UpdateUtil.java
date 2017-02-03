@@ -8,15 +8,17 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,26 +28,27 @@ import android.widget.TextView;
 import com.leday.R;
 import com.leday.entity.UpdateInfo;
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import okhttp3.Call;
+import okhttp3.Response;
 
 public class UpdateUtil {
+
+    private NotificationManager notificationManager;
+    private NotificationCompat.Builder builder;
 
     private ProgressBar mProgressBar;
     private TextView mProgressTxt;
     private Dialog mDownLoadDialog;
 
-    private final String URL_SERVE = "http://www.iyuce.com/Scripts/leday.json";
+    private final String URL_SERVE = "http://lebang08.github.io/update/leday.json";
     private static final int DOWNLOADING = 1;
     private static final int DOWNLOAD_FINISH = 0;
 
@@ -73,10 +76,15 @@ public class UpdateUtil {
                 case DOWNLOADING:
                     mProgressBar.setProgress(mProgress);
                     mProgressTxt.setText((Integer) msg.obj + "%");
+
+                    //通知栏
+                    builder.setContentText(msg.obj + "%");
+//                    builder.setTicker(msg.obj + "%");
+                    notificationManager.notify(0, builder.build());
                     break;
                 case DOWNLOAD_FINISH:
                     mDownLoadDialog.dismiss();
-                    installAPK();
+//                    installAPK();
                     break;
             }
         }
@@ -191,86 +199,117 @@ public class UpdateUtil {
         mDownLoadDialog = builder.create();
         mDownLoadDialog.show();
 
+        //创建通知栏
+        createNotification();
         //下载文件
         downloadAPK();
     }
 
+    /**
+     * 系统通知栏设置
+     */
+    private void createNotification() {
+        notificationManager = (NotificationManager) mcontext.getSystemService(mcontext.NOTIFICATION_SERVICE);
+        builder = new NotificationCompat.Builder(mcontext);
+
+        // action when clicked
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("host://anotheractivity"));
+        builder.setSmallIcon(R.mipmap.img_threepoint)
+                .setContentTitle("开始下载")
+                .setContentText("下载进度")
+                .setTicker("下载进度")
+                .setContentIntent(PendingIntent.getActivity(mcontext, 0, intent, 0));
+        notificationManager.notify(0, builder.build());
+    }
+
     //文件下载的操作(1.存储卡/2.输入流)
     private void downloadAPK() {
-//        OkGo.get(updateInfo.getApkurl())
-//                .execute(new FileCallback() {
-//                    @Override
-//                    public void onSuccess(File file, Call call, Response response) {
-//                        LogUtil.i("file = " + file.toString());
-//                        mSavePath = file.toString();
-//                        mDownLoadDialog.dismiss();
-//                        installAPK(file);
-//                    }
-//
-//                    @Override
-//                    public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
-//                        super.downloadProgress(currentSize, totalSize, progress, networkSpeed);
-//                        LogUtil.i("progress = " + progress + "====" + currentSize + "/" + totalSize + "||networkSpeed = " + networkSpeed);
-//                    }
-//                });
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                        mSavePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/leday/";
-
-                        File dir = new File(mSavePath);
-                        if (!dir.exists()) {
-                            dir.mkdir();
-                        }
-
-                        HttpURLConnection conn = (HttpURLConnection) new URL(updateInfo.getApkurl()).openConnection();
-                        conn.connect();
-                        InputStream is = conn.getInputStream();
-                        int length = conn.getContentLength();
-
-                        File apkFile = new File(mSavePath, updateInfo.getVersion());
-                        FileOutputStream fos = new FileOutputStream(apkFile);
-
-                        int count = 0;
-                        byte[] buffer = new byte[1024];
-
-                        while (!mIsCancel) {
-                            int numread = is.read(buffer);
-                            count += numread;
-                            mProgress = (int) (((float) count / length) * 100);
-                            // 更新进度条
-                            Message msg = new Message();
-                            msg.what = DOWNLOADING;
-                            msg.obj = mProgress;
-                            mUpdateProgressHandler.sendMessage(msg);
-                            // 下载完成
-                            if (numread < 0) {
-                                mUpdateProgressHandler.sendEmptyMessage(DOWNLOAD_FINISH);
-                                break;
-                            }
-                            fos.write(buffer, 0, numread);
-                        }
-                        fos.close();
-                        is.close();
+        OkGo.get(updateInfo.getApkurl())
+                .execute(new FileCallback() {
+                    @Override
+                    public void onSuccess(File file, Call call, Response response) {
+                        LogUtil.i("file = " + file.toString());
+                        mSavePath = file.toString();
+                        mDownLoadDialog.dismiss();
+                        installAPK(file);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+
+                    @Override
+                    public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+                        super.downloadProgress(currentSize, totalSize, progress, networkSpeed);
+                        mProgress = (int) (((float) currentSize / totalSize) * 100);
+                        // 更新进度条
+                        Message msg = new Message();
+                        msg.what = DOWNLOADING;
+                        msg.obj = mProgress;
+                        mUpdateProgressHandler.sendMessageDelayed(msg, 500);
+                        // 下载完成
+                        if (mProgress >= 100) {
+                            mUpdateProgressHandler.sendEmptyMessage(DOWNLOAD_FINISH);
+                        }
+                        LogUtil.i("progress = " + progress + "====" + currentSize + "/" + totalSize + "||networkSpeed = " + networkSpeed);
+                    }
+                });
+
+//        new Thread(new Runnable() {
+//            public void run() {
+//                try {
+//                    if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+//                        mSavePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/leday/";
+//
+//                        File dir = new File(mSavePath);
+//                        if (!dir.exists()) {
+//                            dir.mkdir();
+//                        }
+//
+//                        HttpURLConnection conn = (HttpURLConnection) new URL(updateInfo.getApkurl()).openConnection();
+//                        conn.connect();
+//                        InputStream is = conn.getInputStream();
+//                        int length = conn.getContentLength();
+//
+//                        File apkFile = new File(mSavePath, updateInfo.getVersion());
+//                        FileOutputStream fos = new FileOutputStream(apkFile);
+//
+//                        int count = 0;
+//                        byte[] buffer = new byte[1024];
+//
+//                        while (!mIsCancel) {
+//                            int numread = is.read(buffer);
+//                            count += numread;
+//                            mProgress = (int) (((float) count / length) * 100);
+//                            // 更新进度条
+//                            Message msg = new Message();
+//                            msg.what = DOWNLOADING;
+//                            msg.obj = mProgress;
+//                            mUpdateProgressHandler.sendMessage(msg);
+//                            // 下载完成
+//                            if (numread < 0) {
+//                                mUpdateProgressHandler.sendEmptyMessage(DOWNLOAD_FINISH);
+//                                break;
+//                            }
+//                            fos.write(buffer, 0, numread);
+//                        }
+//                        fos.close();
+//                        is.close();
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
     }
 
     //安装下载好的APK
-    private void installAPK() {
-        File apkFile = new File(mSavePath, updateInfo.getVersion());
-        if (!apkFile.exists()) {
-            return;
-        }
+    private void installAPK(File file) {
+//        File apkFile = new File(mSavePath, updateInfo.getVersion());
+//        if (!apkFile.exists()) {
+//            return;
+//        }
         Intent it = new Intent(Intent.ACTION_VIEW);
         it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.parse("file://" + apkFile.toString());
+        Uri uri = Uri.parse("file://" + file.toString());
         it.setDataAndType(uri, "application/vnd.android.package-archive");
         mcontext.startActivity(it);
         android.os.Process.killProcess(android.os.Process.myPid());
