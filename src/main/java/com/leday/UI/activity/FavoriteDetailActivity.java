@@ -8,12 +8,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.leday.BaseActivity;
+import com.leday.Common.Constant;
 import com.leday.R;
+import com.leday.Util.DbHelper;
+import com.leday.Util.SDCardUtil;
+import com.leday.entity.Today;
 import com.youth.banner.Banner;
 
 public class FavoriteDetailActivity extends BaseActivity implements View.OnClickListener {
 
-    private String local_content, local_title, local_id, local_date;
+    private Today mToday = new Today();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,20 +28,17 @@ public class FavoriteDetailActivity extends BaseActivity implements View.OnClick
     }
 
     private void initView() {
-        local_content = getIntent().getStringExtra("local_content");
-        local_title = getIntent().getStringExtra("local_title");
-        local_date = getIntent().getStringExtra("local_date");
-        local_id = getIntent().getStringExtra("local_id");
+        mToday = (Today) getIntent().getSerializableExtra("local_today_bean");
 
-        Banner mBanner  = (Banner) findViewById(R.id.banner_activity_today);
+        Banner mBanner = (Banner) findViewById(R.id.banner_activity_today);
         mBanner.setVisibility(View.GONE);
         TextView mTitle = (TextView) findViewById(R.id.txt_Today_title);
         TextView mContent = (TextView) findViewById(R.id.content_activity_today);
         TextView mUnLike = (TextView) findViewById(R.id.txt_Today_like);
         ImageView mBack = (ImageView) findViewById(R.id.img_today_back);
 
-        mTitle.setText(local_date + "\r" + local_title);
-        mContent.setText(local_content);
+        mTitle.setText(mToday.getDate() + "\r" + mToday.getTitle());
+        mContent.setText(mToday.getContent());
         mUnLike.setText("取消收藏");
 
         mUnLike.setOnClickListener(this);
@@ -49,9 +50,9 @@ public class FavoriteDetailActivity extends BaseActivity implements View.OnClick
         switch (view.getId()) {
             case R.id.txt_Today_like:
                 Snackbar.make(view, "取消成功", Snackbar.LENGTH_SHORT).show();
-                String local_delete = "DELETE FROM todaytb WHERE _id = '" + local_id + "'";
-                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-                mDatabase.execSQL(local_delete);
+                String sql_delete = "DELETE FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_ID + " = " + mToday.getE_id();
+                SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+                mDatabase.execSQL(sql_delete);
                 mDatabase.close();
                 break;
             default:

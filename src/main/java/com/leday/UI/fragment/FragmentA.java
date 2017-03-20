@@ -121,9 +121,7 @@ public class FragmentA extends BaseFragment implements AdapterView.OnItemClickLi
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(getActivity(), TodayActivity.class);
-        intent.putExtra("local_id", mTodayList.get(position).getE_id());
-        intent.putExtra("local_title", mTodayList.get(position).getTitle());
-        intent.putExtra("local_date", mTodayList.get(position).getDate());
+        intent.putExtra("local_today", mTodayList.get(position));
         startActivity(intent);
     }
 

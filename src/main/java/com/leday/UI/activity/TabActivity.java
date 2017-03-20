@@ -1,26 +1,36 @@
 package com.leday.UI.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.leday.Common.Constant;
 import com.leday.R;
 import com.leday.Service.UpdateService;
 import com.leday.UI.fragment.FragmentA;
 import com.leday.UI.fragment.FragmentB;
 import com.leday.UI.fragment.FragmentC;
 import com.leday.UI.fragment.FragmentD;
+import com.leday.Util.DbHelper;
 import com.leday.Util.NetUtil;
+import com.leday.Util.SDCardUtil;
+import com.leday.Util.StringUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
+import com.leday.entity.Today;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,6 +134,65 @@ public class TabActivity extends AppCompatActivity implements View.OnClickListen
         mViewPager.setAdapter(mFragmentAdapter);
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setOnPageChangeListener(this);
+
+        //转移数据库
+        new AlertDialog.Builder(this)
+                .setTitle("亲，收藏夹优化啦")
+                .setMessage("部分亲反馈后，现在修改了收藏夹的位置和结构啦，迁移后您可以方便的在本地保留/迁移您的收藏夹数据库哦,拒绝迁移可能导致数据丢失")
+                .setPositiveButton("现在迁移", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        transferDatabase(true);
+                    }
+                }).setNegativeButton("不再提醒", null)
+                .show();
+    }
+
+    private void transferDatabase(boolean need_transfer) {
+        //TODO 拿出自己的数据库,通过PreferenceUtil或者文件是否存在判断是否需要转移
+        if (!need_transfer) {
+            return;
+        }
+        ArrayList<Today> mTransferList = new ArrayList<>();
+        Today mmToday;
+        SQLiteDatabase database_orgina = new DbHelper(this, "leday.db").getWritableDatabase();
+        Cursor cursor = database_orgina.query("todaytb", null, null, null, null, null, null);
+        database_orgina.beginTransaction();
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                mmToday = new Today();
+                mmToday.setE_id(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_ID)));
+                mmToday.setDate(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_DATE)));
+                mmToday.setTitle(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_TITLE)));
+                mmToday.setContent(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_CONTENT)));
+                mTransferList.add(mmToday);
+            }
+            cursor.close();
+        }
+        //批量操作成功,关闭事务
+        database_orgina.setTransactionSuccessful();
+        database_orgina.endTransaction();
+        database_orgina.close();
+
+        SQLiteDatabase database_new = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+        String sql_create = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
+                + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
+                + Constant.COLUMN_DATE + " text,"
+                + Constant.COLUMN_TITLE + " text, "
+                + Constant.COLUMN_CONTENT + " text)";
+        database_new.execSQL(sql_create);
+        for (int i = 0; i < mTransferList.size(); i++) {
+            String sql_insert = "INSERT INTO " + Constant.TABLE_TODAY + "("
+                    + Constant.COLUMN_DATE + ","
+                    + Constant.COLUMN_TITLE + ","
+                    + Constant.COLUMN_CONTENT + ")VALUES(\""
+                    + mTransferList.get(i).getDate() + "\",\""
+                    + StringUtil.transferString(mTransferList.get(i).getTitle()) + "\",\""
+                    + StringUtil.transferString(mTransferList.get(i).getContent()) + "\");";
+            database_new.execSQL(sql_insert);
+        }
+        database_new.close();
+        ToastUtil.show(this, "恭喜您,迁移完成啦", Toast.LENGTH_SHORT);
     }
 
     //        页卡点击事件

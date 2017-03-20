@@ -1,12 +1,26 @@
 package com.leday.Common;
 
 /**
- * Created by Administrator on 2016/12/30.
+ * Created by LeBang on 2016/12/30
  */
 public class Constant {
 
     public static final int REFRESH_DATA = 0;
     public static final int LOAD_MORE_DATA = 1;
+
+    public static final int DATABASE_VERSION = 1;
+
+    public static final String NONE = "none";
+
+    //数据库名
+    public static final String DATABASE_LEBANG = "LeBang.db";
+    //数据表名
+    public static final String TABLE_TODAY = "le_today_table";
+    //数据表字段
+    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_DATE = "date";
+    public static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_CONTENT = "content";
 
     //今时今往
     public static final String URL_TODAY = "http://v.juhe.cn/todayOnhistory/queryEvent.php?key=776cbc23ec84837a647a7714a0f06bff&date=";

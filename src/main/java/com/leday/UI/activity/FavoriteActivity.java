@@ -12,8 +12,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.leday.BaseActivity;
+import com.leday.Common.Constant;
 import com.leday.R;
+import com.leday.Util.DbHelper;
 import com.leday.Util.PreferenUtil;
+import com.leday.Util.SDCardUtil;
 import com.leday.entity.Today;
 
 import java.util.ArrayList;
@@ -62,24 +65,21 @@ public class FavoriteActivity extends BaseActivity implements AdapterView.OnItem
     }
 
     public void queryDatabase() {
-        //应该用该方法来判断是否存在某表
-//        if (!tabIsExist("todaytb")) {
-//            return;
-//        }
         if (!PreferenUtil.contains(FavoriteActivity.this, "todaytb_is_exist")) {
             return;
         }
-        mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+//        mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+        mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
         //数据库查询
-        Cursor mCursor = mDatabase.query("todaytb", null, "_id>?", new String[]{"0"}, null, null, "_id desc");
+        Cursor mCursor = mDatabase.query(Constant.TABLE_TODAY, null, null, null, null, null, "_id desc");
         if (mCursor != null) {
             Today today;
             while (mCursor.moveToNext()) {
                 today = new Today();
-                today.setTitle(mCursor.getString(mCursor.getColumnIndex("title")));
-                today.setContent(mCursor.getString(mCursor.getColumnIndex("content")));
-                today.setDate(mCursor.getString(mCursor.getColumnIndex("date")));
-                today.setE_id(mCursor.getString(mCursor.getColumnIndex("_id")));
+                today.setTitle(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_TITLE)));
+                today.setContent(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_CONTENT)));
+                today.setDate(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_DATE)));
+                today.setE_id(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_ID)));
                 mList.add(today);
             }
             mCursor.close();
@@ -99,10 +99,7 @@ public class FavoriteActivity extends BaseActivity implements AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Intent intent = new Intent(FavoriteActivity.this, FavoriteDetailActivity.class);
-        intent.putExtra("local_date", mList.get(i).getDate());
-        intent.putExtra("local_title", mList.get(i).getTitle());
-        intent.putExtra("local_content", mList.get(i).getContent());
-        intent.putExtra("local_id", mList.get(i).getE_id());
+        intent.putExtra("local_today_bean", mList.get(i));
         startActivity(intent);
     }
 
@@ -114,8 +111,8 @@ public class FavoriteActivity extends BaseActivity implements AdapterView.OnItem
                 .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-                        String local_delete = "DELETE FROM todaytb WHERE _id = '" + mList.get(position).getE_id() + "'";
+                        mDatabase = new DbHelper(FavoriteActivity.this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+                        String local_delete = "DELETE FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_ID + " = \"" + mList.get(position).getE_id() + "\"";
                         mDatabase.execSQL(local_delete);
                         mDatabase.close();
 
