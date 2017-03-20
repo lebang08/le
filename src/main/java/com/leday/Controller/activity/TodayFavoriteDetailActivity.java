@@ -9,13 +9,13 @@ import android.widget.TextView;
 
 import com.leday.BaseActivity;
 import com.leday.Common.Constant;
+import com.leday.Model.Today;
 import com.leday.R;
 import com.leday.Util.DbHelper;
 import com.leday.Util.SDCardUtil;
-import com.leday.Model.Today;
 import com.youth.banner.Banner;
 
-public class FavoriteDetailActivity extends BaseActivity implements View.OnClickListener {
+public class TodayFavoriteDetailActivity extends BaseActivity implements View.OnClickListener {
 
     private Today mToday = new Today();
 
@@ -49,7 +49,7 @@ public class FavoriteDetailActivity extends BaseActivity implements View.OnClick
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txt_Today_like:
-                Snackbar.make(view, "取消成功", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(view, "取消收藏成功", Snackbar.LENGTH_SHORT).show();
                 String sql_delete = "DELETE FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_ID + " = " + mToday.getE_id();
                 SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
                 mDatabase.execSQL(sql_delete);

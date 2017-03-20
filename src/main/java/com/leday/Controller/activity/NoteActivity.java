@@ -15,16 +15,16 @@ import android.widget.TextView;
 
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leday.BaseActivity;
-import com.leday.Util.Interface.RecyclerItemClickListener;
-import com.leday.R;
-import com.leday.Util.PreferenUtil;
 import com.leday.Controller.adapter.NoteAdapter;
 import com.leday.Model.Note;
+import com.leday.R;
+import com.leday.Util.Interface.RecyclerItemClickListener;
+import com.leday.Util.PreferenUtil;
 
 import java.util.ArrayList;
 
 /**
- * Created by Administrator on 2016/10/26.
+ * Created by Administrator on 2016/10/26
  */
 public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingListener {
 
@@ -33,7 +33,6 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
     private XRecyclerView mRecyclerView;
     private NoteAdapter mAdapter;
     private ArrayList<Note> mList = new ArrayList<>();
-    private LinearLayoutManager mLinearLayoutmanager;
 
     private SQLiteDatabase mDatabase;
 
@@ -56,11 +55,9 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
     private void initView() {
         mRecyclerView = (XRecyclerView) findViewById(R.id.recycler_activity_note);
         mTitle = (TextView) findViewById(R.id.txt_note_title);
-        mLinearLayoutmanager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLinearLayoutmanager);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setHasFixedSize(true);
-        //RecyclerView设置Item事件
         doRecyclerViewItem();
 
         initData();

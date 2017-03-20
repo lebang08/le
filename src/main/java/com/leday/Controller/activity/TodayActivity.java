@@ -1,6 +1,5 @@
 package com.leday.Controller.activity;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -12,13 +11,12 @@ import android.widget.TextView;
 
 import com.leday.BaseActivity;
 import com.leday.Common.Constant;
+import com.leday.Model.Today;
 import com.leday.R;
 import com.leday.Util.DbHelper;
 import com.leday.Util.DbUtil;
 import com.leday.Util.GlideImageLoader;
-import com.leday.Util.PreferenUtil;
 import com.leday.Util.SDCardUtil;
-import com.leday.Model.Today;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.youth.banner.Banner;
@@ -132,24 +130,26 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
         switch (view.getId()) {
             case R.id.txt_Today_like:
                 //建一张表保存文章
-                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-                mDatabase.execSQL("create table if not exists todaytb(_id integer primary key autoincrement,date text not null,title text not null,content text not null)");
-                ContentValues mValues = new ContentValues();
-                mValues.put("date", mToday.getDate());
-                mValues.put("title", mToday.getTitle());
-                mValues.put("content", local_content);
-                mDatabase.insert("todaytb", null, mValues);
-                mValues.clear();
-                mDatabase.close();
+//                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+//                mDatabase.execSQL("create table if not exists todaytb(_id integer primary key autoincrement,date text not null,title text not null,content text not null)");
+//                ContentValues mValues = new ContentValues();
+//                mValues.put("date", mToday.getDate());
+//                mValues.put("title", mToday.getTitle());
+//                mValues.put("content", local_content);
+//                mDatabase.insert("todaytb", null, mValues);
+//                mValues.clear();
+//                mDatabase.close();
+//                //权宜之计，做个标识给FavoriteActivity用
+//                PreferenUtil.put(TodayActivity.this, "todaytb_is_exist", "actually_not");
 
                 /**新的数据库*/
                 SQLiteDatabase database_new = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
-                String sql_create_ = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
+                String sql_create = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
                         + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
                         + Constant.COLUMN_DATE + " text,"
                         + Constant.COLUMN_TITLE + " text, "
                         + Constant.COLUMN_CONTENT + " text)";
-                database_new.execSQL(sql_create_);
+                database_new.execSQL(sql_create);
 
                 String sql_select = "SELECT * FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_DATE + " =? AND " + Constant.COLUMN_TITLE + " =?";
                 String isNone = DbUtil.cursorToNotNullString(database_new.rawQuery(sql_select, new String[]{mToday.getDate(), mToday.getTitle()}));
@@ -167,8 +167,6 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
                     Snackbar.make(view, "已经收藏啦，可以前往收藏夹查看", Snackbar.LENGTH_SHORT).show();
                 }
                 database_new.close();
-                //权宜之计，做个标识给FavoriteActivity用
-                PreferenUtil.put(TodayActivity.this, "todaytb_is_exist", "actually_not");
                 break;
             case R.id.img_today_back:
                 finish();

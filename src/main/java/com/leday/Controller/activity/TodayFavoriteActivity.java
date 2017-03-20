@@ -6,37 +6,38 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.leday.BaseActivity;
 import com.leday.Common.Constant;
+import com.leday.Model.Today;
 import com.leday.R;
 import com.leday.Util.DbHelper;
-import com.leday.Util.PreferenUtil;
+import com.leday.Util.DbUtil;
 import com.leday.Util.SDCardUtil;
-import com.leday.Model.Today;
+import com.leday.Util.ToastUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoriteActivity extends BaseActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class TodayFavoriteActivity extends BaseActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
-    //用ID来删除相对应的数据
     private ListView mListView;
     private ArrayAdapter mAdapter;
 
-    private List<Today> mList = new ArrayList<>();
+    private List<Today> mTodayList = new ArrayList<>();
     private ArrayList<String> mDataList = new ArrayList<>();
-    private SQLiteDatabase mDatabase;
-
 
     @Override
     protected void onRestart() {
         mDataList.clear();
-        mList.clear();
+        mTodayList.clear();
         queryDatabase();
         mAdapter.notifyDataSetChanged();
         super.onRestart();
@@ -52,25 +53,29 @@ public class FavoriteActivity extends BaseActivity implements AdapterView.OnItem
 
     private void initView() {
         mListView = (ListView) findViewById(R.id.listview_activity_favoriter);
-
         //数据
         queryDatabase();
-
         //适配器
-        mAdapter = new ArrayAdapter(FavoriteActivity.this, android.R.layout.simple_list_item_1, mDataList);
+        mAdapter = new ArrayAdapter(TodayFavoriteActivity.this, android.R.layout.simple_list_item_1, mDataList);
         mListView.setAdapter(mAdapter);
-
         mListView.setOnItemClickListener(this);
         mListView.setOnItemLongClickListener(this);
     }
 
     public void queryDatabase() {
-        if (!PreferenUtil.contains(FavoriteActivity.this, "todaytb_is_exist")) {
+        File file = new File(SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG);
+        if (!file.exists()) {
+            ToastUtil.show(this, "您的收藏夹空空如也", Toast.LENGTH_SHORT);
             return;
         }
-//        mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-        mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+        SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
         //数据库查询
+        String isNone_table = DbUtil.queryToString(mDatabase, Constant.TABLE_SQLITE_MASTER, Constant.COLUMN_NAME, Constant.COLUMN_TABLE_NAME, Constant.TABLE_TODAY);
+        if (TextUtils.equals(isNone_table, Constant.NONE)) {
+            mDatabase.close();
+            ToastUtil.show(this, "您的今时今往收藏夹空空如也", Toast.LENGTH_SHORT);
+            return;
+        }
         Cursor mCursor = mDatabase.query(Constant.TABLE_TODAY, null, null, null, null, null, "_id desc");
         if (mCursor != null) {
             Today today;
@@ -80,15 +85,15 @@ public class FavoriteActivity extends BaseActivity implements AdapterView.OnItem
                 today.setContent(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_CONTENT)));
                 today.setDate(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_DATE)));
                 today.setE_id(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_ID)));
-                mList.add(today);
+                mTodayList.add(today);
             }
             mCursor.close();
         }
         mDatabase.close();
 
         //将数据中的时间和标题拼接后，单独做成一个数组，用于展示
-        for (int i = 0; i < mList.size(); i++) {
-            mDataList.add(mList.get(i).getDate() + ":\r" + mList.get(i).getTitle());
+        for (int i = 0; i < mTodayList.size(); i++) {
+            mDataList.add(mTodayList.get(i).getDate() + ":\r" + mTodayList.get(i).getTitle());
         }
     }
 
@@ -98,8 +103,8 @@ public class FavoriteActivity extends BaseActivity implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Intent intent = new Intent(FavoriteActivity.this, FavoriteDetailActivity.class);
-        intent.putExtra("local_today_bean", mList.get(i));
+        Intent intent = new Intent(TodayFavoriteActivity.this, TodayFavoriteDetailActivity.class);
+        intent.putExtra("local_today_bean", mTodayList.get(i));
         startActivity(intent);
     }
 
@@ -111,13 +116,13 @@ public class FavoriteActivity extends BaseActivity implements AdapterView.OnItem
                 .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mDatabase = new DbHelper(FavoriteActivity.this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
-                        String local_delete = "DELETE FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_ID + " = \"" + mList.get(position).getE_id() + "\"";
+                        SQLiteDatabase mDatabase = new DbHelper(TodayFavoriteActivity.this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+                        String local_delete = "DELETE FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_ID + " = \"" + mTodayList.get(position).getE_id() + "\"";
                         mDatabase.execSQL(local_delete);
                         mDatabase.close();
 
                         //刷新列表
-                        mList.clear();
+                        mTodayList.clear();
                         mDataList.clear();
                         queryDatabase();
                         mAdapter.notifyDataSetChanged();

@@ -15,12 +15,17 @@ public class Constant {
     //数据库名
     public static final String DATABASE_LEBANG = "LeBang.db";
     //数据表名
+    public static final String TABLE_SQLITE_MASTER = "sqlite_master";   //sql系统表
     public static final String TABLE_TODAY = "le_today_table";
+    public static final String TABLE_WECHAT = "le_wechat_table";
     //数据表字段
+    public static final String COLUMN_NAME = "name";            //sql系统表中的字段
+    public static final String COLUMN_TABLE_NAME = "tbl_name";  //sql系统表中的字段
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_TITLE = "title";
     public static final String COLUMN_CONTENT = "content";
+    public static final String COLUMN_URL = "url";
 
     //今时今往
     public static final String URL_TODAY = "http://v.juhe.cn/todayOnhistory/queryEvent.php?key=776cbc23ec84837a647a7714a0f06bff&date=";

@@ -14,13 +14,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.leday.BaseActivity;
+import com.leday.Common.Constant;
+import com.leday.Model.Wechat;
 import com.leday.R;
+import com.leday.Util.DbHelper;
+import com.leday.Util.SDCardUtil;
 
 public class WebFavoriteDetailActivity extends BaseActivity implements View.OnClickListener {
 
+    //TODO 其实可以有更丰富的内容，作者,等等。。。
     private WebView mWebView;
-
-    private String local_url,local_title,local_id;
+    private Wechat mWechat = new Wechat();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,25 +36,22 @@ public class WebFavoriteDetailActivity extends BaseActivity implements View.OnCl
     }
 
     private void initView() {
-        local_title = getIntent().getStringExtra("local_title");
-        local_url = getIntent().getStringExtra("local_url");
-        local_id = getIntent().getStringExtra("local_id");
-
+        mWechat = (Wechat) getIntent().getSerializableExtra("local_wechat");
         ImageView mBack = (ImageView) findViewById(R.id.img_webviewdetail_back);
         TextView mTitle = (TextView) findViewById(R.id.txt_webviewdetail_title);
         TextView mUrl = (TextView) findViewById(R.id.txt_webviewdetail_url);
         TextView mUnLike = (TextView) findViewById(R.id.txt_webviewdetail_like);
         mWebView = (WebView) findViewById(R.id.webviewdetail_activity);
 
-        mTitle.setText(local_title);
-        mUrl.setText("长按复制文章地址->" + local_url);
+        mTitle.setText(mWebView.getTitle());
+        mUrl.setText("长按复制文章地址->" + mWechat.getUrl());
 
         mUnLike.setOnClickListener(this);
         mBack.setOnClickListener(this);
     }
 
     private void initEvent() {
-        mWebView.loadUrl(local_url);
+        mWebView.loadUrl(mWechat.getUrl());
         //JS交互
         mWebView.getSettings().setJavaScriptEnabled(true);
         //支持放缩
@@ -78,9 +79,9 @@ public class WebFavoriteDetailActivity extends BaseActivity implements View.OnCl
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.txt_webviewdetail_like:
-                Snackbar.make(view, "取消成功", Snackbar.LENGTH_SHORT).show();
-                String local_delete = "DELETE FROM wechattb WHERE _id = '" + local_id + "'";
-                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+                Snackbar.make(view, "取消收藏成功", Snackbar.LENGTH_SHORT).show();
+                String local_delete = "DELETE FROM " + Constant.TABLE_WECHAT + " WHERE " + Constant.COLUMN_ID + " = \"" + mWechat.getId() + "\"";
+                SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
                 mDatabase.execSQL(local_delete);
                 mDatabase.close();
                 break;

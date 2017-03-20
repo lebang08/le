@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,19 +19,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.leday.Common.Constant;
-import com.leday.R;
 import com.leday.Controller.Service.UpdateService;
-import com.leday.Controller.fragment.FragmentToday;
-import com.leday.Controller.fragment.FragmentStar;
-import com.leday.Controller.fragment.FragmentWechat;
 import com.leday.Controller.fragment.FragmentMine;
+import com.leday.Controller.fragment.FragmentStar;
+import com.leday.Controller.fragment.FragmentToday;
+import com.leday.Controller.fragment.FragmentWechat;
+import com.leday.Model.Today;
+import com.leday.Model.Wechat;
+import com.leday.R;
 import com.leday.Util.DbHelper;
+import com.leday.Util.DbUtil;
 import com.leday.Util.NetUtil;
 import com.leday.Util.SDCardUtil;
 import com.leday.Util.StringUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
-import com.leday.Model.Today;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,50 +151,96 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
                 .show();
     }
 
+    //迁移表用
+    private ArrayList<Today> mTodayList = new ArrayList<>();
+    private Today mmToday;
+    private ArrayList<Wechat> mWechatList = new ArrayList<>();
+    private Wechat mWechat;
+
     private void transferDatabase(boolean need_transfer) {
         //TODO 拿出自己的数据库,通过PreferenceUtil或者文件是否存在判断是否需要转移
         if (!need_transfer) {
             return;
         }
-        ArrayList<Today> mTransferList = new ArrayList<>();
-        Today mmToday;
+        //取出历史上的今天
         SQLiteDatabase database_orgina = new DbHelper(this, "leday.db").getWritableDatabase();
-        Cursor cursor = database_orgina.query("todaytb", null, null, null, null, null, null);
-        database_orgina.beginTransaction();
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                mmToday = new Today();
-                mmToday.setE_id(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_ID)));
-                mmToday.setDate(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_DATE)));
-                mmToday.setTitle(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_TITLE)));
-                mmToday.setContent(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_CONTENT)));
-                mTransferList.add(mmToday);
+        String isNone_today_table = DbUtil.queryToString(database_orgina, Constant.TABLE_SQLITE_MASTER, Constant.COLUMN_NAME, Constant.COLUMN_TABLE_NAME, "todaytb");
+        if (!TextUtils.equals(isNone_today_table, Constant.NONE)) {
+            Cursor cursor_today = database_orgina.query("todaytb", null, null, null, null, null, null);
+            database_orgina.beginTransaction();
+            if (cursor_today != null) {
+                while (cursor_today.moveToNext()) {
+                    mmToday = new Today();
+                    mmToday.setE_id(cursor_today.getString(cursor_today.getColumnIndex(Constant.COLUMN_ID)));
+                    mmToday.setDate(cursor_today.getString(cursor_today.getColumnIndex(Constant.COLUMN_DATE)));
+                    mmToday.setTitle(cursor_today.getString(cursor_today.getColumnIndex(Constant.COLUMN_TITLE)));
+                    mmToday.setContent(cursor_today.getString(cursor_today.getColumnIndex(Constant.COLUMN_CONTENT)));
+                    mTodayList.add(mmToday);
+                }
+                cursor_today.close();
             }
-            cursor.close();
+            database_orgina.setTransactionSuccessful();
+            database_orgina.endTransaction();
         }
-        //批量操作成功,关闭事务
-        database_orgina.setTransactionSuccessful();
-        database_orgina.endTransaction();
+        //取出微信微选
+        String isNone_wechat_table = DbUtil.queryToString(database_orgina, Constant.TABLE_SQLITE_MASTER, Constant.COLUMN_NAME, Constant.COLUMN_TABLE_NAME, "wechattb");
+        if (!TextUtils.equals(isNone_wechat_table, Constant.NONE)) {
+            Cursor cursor = database_orgina.query("wechattb", null, null, null, null, null, null);
+            database_orgina.beginTransaction();
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    mWechat = new Wechat();
+                    mWechat.setId(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_ID)));
+                    mWechat.setTitle(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_TITLE)));
+                    mWechat.setUrl(cursor.getString(cursor.getColumnIndex(Constant.COLUMN_URL)));
+                    mWechatList.add(mWechat);
+                }
+                cursor.close();
+            }
+            //批量操作成功,关闭事务
+            database_orgina.setTransactionSuccessful();
+            database_orgina.endTransaction();
+        }
         database_orgina.close();
 
         SQLiteDatabase database_new = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
-        String sql_create = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
-                + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
-                + Constant.COLUMN_DATE + " text,"
-                + Constant.COLUMN_TITLE + " text, "
-                + Constant.COLUMN_CONTENT + " text)";
-        database_new.execSQL(sql_create);
-        for (int i = 0; i < mTransferList.size(); i++) {
-            String sql_insert = "INSERT INTO " + Constant.TABLE_TODAY + "("
-                    + Constant.COLUMN_DATE + ","
-                    + Constant.COLUMN_TITLE + ","
-                    + Constant.COLUMN_CONTENT + ")VALUES(\""
-                    + mTransferList.get(i).getDate() + "\",\""
-                    + StringUtil.transferString(mTransferList.get(i).getTitle()) + "\",\""
-                    + StringUtil.transferString(mTransferList.get(i).getContent()) + "\");";
-            database_new.execSQL(sql_insert);
+        //迁移历史上的今天
+        if (!TextUtils.equals(isNone_today_table, Constant.NONE)) {
+            String sql_create_today = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
+                    + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
+                    + Constant.COLUMN_DATE + " text,"
+                    + Constant.COLUMN_TITLE + " text, "
+                    + Constant.COLUMN_CONTENT + " text)";
+            database_new.execSQL(sql_create_today);
+            for (int i = 0; i < mTodayList.size(); i++) {
+                String sql_insert_today = "INSERT INTO " + Constant.TABLE_TODAY + "("
+                        + Constant.COLUMN_DATE + ","
+                        + Constant.COLUMN_TITLE + ","
+                        + Constant.COLUMN_CONTENT + ")VALUES(\""
+                        + mTodayList.get(i).getDate() + "\",\""
+                        + StringUtil.transferString(mTodayList.get(i).getTitle()) + "\",\""
+                        + StringUtil.transferString(mTodayList.get(i).getContent()) + "\");";
+                database_new.execSQL(sql_insert_today);
+            }
+        }
+        //迁移微信微选
+        if (!TextUtils.equals(isNone_wechat_table, Constant.NONE)) {
+            String sql_create_wechat = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_WECHAT + "("
+                    + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
+                    + Constant.COLUMN_TITLE + " text, "
+                    + Constant.COLUMN_URL + " text)";
+            database_new.execSQL(sql_create_wechat);
+            for (int i = 0; i < mTodayList.size(); i++) {
+                String sql_insert_wechat = "INSERT INTO " + Constant.TABLE_WECHAT + "("
+                        + Constant.COLUMN_TITLE + ","
+                        + Constant.COLUMN_URL + ")VALUES(\""
+                        + StringUtil.transferString(mWechatList.get(i).getTitle()) + "\",\""
+                        + StringUtil.transferString(mWechatList.get(i).getUrl()) + "\");";
+                database_new.execSQL(sql_insert_wechat);
+            }
         }
         database_new.close();
+
         ToastUtil.show(this, "恭喜您,迁移完成啦", Toast.LENGTH_SHORT);
     }
 

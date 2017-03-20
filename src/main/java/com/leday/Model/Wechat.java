@@ -1,9 +1,11 @@
 package com.leday.Model;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2016/6/23
  */
-public class Wechat {
+public class Wechat implements Serializable {
     private String id;
     private String title;
     private String source;

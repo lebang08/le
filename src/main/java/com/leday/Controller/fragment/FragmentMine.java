@@ -20,7 +20,7 @@ import com.leday.Util.PreferenUtil;
 import com.leday.Util.ToastUtil;
 import com.leday.Util.UpdateUtil;
 import com.leday.View.ListViewHightHelper;
-import com.leday.Controller.activity.FavoriteActivity;
+import com.leday.Controller.activity.TodayFavoriteActivity;
 import com.leday.Controller.activity.NoteActivity;
 import com.leday.Controller.activity.TalkActivity;
 import com.leday.Controller.activity.WebFavoriteActivity;
@@ -102,7 +102,7 @@ public class FragmentMine extends BaseFragment implements AdapterView.OnItemClic
                 startActivity(new Intent(getActivity(), TalkActivity.class));
                 break;
             case 2:
-                startActivity(new Intent(getActivity(), FavoriteActivity.class));
+                startActivity(new Intent(getActivity(), TodayFavoriteActivity.class));
                 break;
             case 3:
                 startActivity(new Intent(getActivity(), WebFavoriteActivity.class));

@@ -40,9 +40,9 @@
         <activity android:name=".Controller.activity.StarActivity" />
         <activity android:name=".Controller.activity.WebViewActivity" />
         <activity android:name=".Controller.activity.TalkActivity" />
-        <activity android:name=".Controller.activity.FavoriteActivity" />
+        <activity android:name=".Controller.activity.TodayFavoriteActivity" />
         <activity android:name=".Controller.activity.WebFavoriteActivity" />
-        <activity android:name=".Controller.activity.FavoriteDetailActivity" />
+        <activity android:name=".Controller.activity.TodayFavoriteDetailActivity" />
         <activity android:name=".Controller.activity.WebFavoriteDetailActivity" />
         <activity android:name=".Controller.activity.NoteActivity" />
         <activity android:name=".Controller.activity.NoteDetailActivity" />

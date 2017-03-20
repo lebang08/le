@@ -1,11 +1,11 @@
 package com.leday.Controller.activity;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -15,14 +15,18 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import com.leday.BaseActivity;
+import com.leday.Common.Constant;
+import com.leday.Model.Wechat;
 import com.leday.R;
+import com.leday.Util.DbHelper;
+import com.leday.Util.DbUtil;
 import com.leday.Util.PreferenUtil;
+import com.leday.Util.SDCardUtil;
 
 public class WebViewActivity extends BaseActivity implements View.OnClickListener {
 
     private WebView mWebView;
-
-    private String local_title, local_url;
+    private Wechat mWechat = new Wechat();
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -46,20 +50,17 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
     }
 
     private void initView() {
-        Intent intent = getIntent();
-        local_url = intent.getStringExtra("localurl");
-        local_title = intent.getStringExtra("localtitle");
-
+        mWechat = (Wechat) getIntent().getSerializableExtra("local_wechat_web");
         TextView mLike = (TextView) findViewById(R.id.txt_webview_like);
         mWebView = (WebView) findViewById(R.id.webview_activity);
         TextView mTitle = (TextView) findViewById(R.id.txt_webview_title);
-        mTitle.setText(local_title);
+        mTitle.setText(mWechat.getTitle());
 
         mLike.setOnClickListener(this);
     }
 
     private void initEvent() {
-        mWebView.loadUrl(local_url);
+        mWebView.loadUrl(mWechat.getUrl());
         //JS交互
         mWebView.getSettings().setJavaScriptEnabled(true);
         //支持放缩
@@ -92,17 +93,40 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
         switch (view.getId()) {
             case R.id.txt_webview_like:
                 //建一张表保存文章
-                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-                mDatabase.execSQL("create table if not exists wechattb(_id integer primary key autoincrement,title text not null,url text not null)");
-                ContentValues mValues = new ContentValues();
-                mValues.put("title", local_title);
-                mValues.put("url", local_url);
-                mDatabase.insert("wechattb", null, mValues);
-                mValues.clear();
-                mDatabase.close();
-                Snackbar.make(view, "收藏成功 : " + local_title, Snackbar.LENGTH_SHORT).show();
-                //权宜之计，做个标识给FavoriteActivity用
-                PreferenUtil.put(WebViewActivity.this, "wechattb_is_exist", "actually_not");
+//                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+//                mDatabase.execSQL("create table if not exists wechattb(_id integer primary key autoincrement,title text not null,url text not null)");
+//                ContentValues mValues = new ContentValues();
+//                mValues.put("title", mWechat.getTitle());
+//                mValues.put("url", mWechat.getUrl());
+//                mDatabase.insert("wechattb", null, mValues);
+//                mValues.clear();
+//                mDatabase.close();
+//                Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
+//                //权宜之计，做个标识给FavoriteActivity用
+//                PreferenUtil.put(WebViewActivity.this, "wechattb_is_exist", "actually_not");
+
+                /**新的数据库*/
+                SQLiteDatabase database_new = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+                String sql_create = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_WECHAT + "("
+                        + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
+                        + Constant.COLUMN_TITLE + " text, "
+                        + Constant.COLUMN_URL + " text)";
+                database_new.execSQL(sql_create);
+
+                String sql_select = "SELECT * FROM " + Constant.TABLE_WECHAT + " WHERE " + Constant.COLUMN_URL + " =? AND " + Constant.COLUMN_TITLE + " =?";
+                String isNone = DbUtil.cursorToNotNullString(database_new.rawQuery(sql_select, new String[]{mWechat.getUrl(), mWechat.getTitle()}));
+                if (TextUtils.equals(isNone, Constant.NONE)) {
+                    String sql_insert = "INSERT INTO " + Constant.TABLE_WECHAT + "("
+                            + Constant.COLUMN_TITLE + ","
+                            + Constant.COLUMN_URL + ")VALUES(\""
+                            + mWechat.getTitle() + "\",\""
+                            + mWechat.getUrl() + "\");";
+                    database_new.execSQL(sql_insert);
+                    Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(view, "已经收藏啦，可以前往收藏夹查看", Snackbar.LENGTH_SHORT).show();
+                }
+                database_new.close();
                 break;
         }
     }

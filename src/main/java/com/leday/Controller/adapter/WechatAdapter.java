@@ -10,9 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.leday.R;
 import com.leday.Controller.activity.WebViewActivity;
 import com.leday.Model.Wechat;
+import com.leday.R;
+import com.leday.Util.LogUtil;
 
 import java.util.List;
 
@@ -45,8 +46,7 @@ public class WechatAdapter extends RecyclerView.Adapter<WechatAdapter.ViewHolder
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, WebViewActivity.class);
-                intent.putExtra("localurl", mList.get(position).getUrl());
-                intent.putExtra("localtitle", mList.get(position).getTitle());
+                intent.putExtra("local_wechat_web", mList.get(position));
                 mContext.startActivity(intent);
             }
         });

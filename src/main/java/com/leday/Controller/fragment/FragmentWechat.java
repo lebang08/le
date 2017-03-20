@@ -88,7 +88,6 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
         mRecyclerView.addHeaderView(headerView);
     }
 
-
     private void initDisplay() {
         mDisplayMetric = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(mDisplayMetric);
@@ -114,8 +113,6 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
 
     /**
      * 请求成功后对data结果进行处理
-     *
-     * @param response
      */
     private void Dosuccess(String response, int code) {
         JSONObject obj;
