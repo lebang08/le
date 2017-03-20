@@ -3,7 +3,7 @@ package com.leday.Util;
 import android.util.Log;
 
 import com.leday.Common.Constant;
-import com.leday.entity.Talk;
+import com.leday.Model.Talk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
