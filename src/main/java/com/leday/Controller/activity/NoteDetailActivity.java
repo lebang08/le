@@ -105,8 +105,6 @@ public class NoteDetailActivity extends AppCompatActivity {
      * 提交保存标签
      */
     public void doSubmit() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         local_content = mContent.getText().toString();
         if (TextUtils.isEmpty(local_content)) {
             ToastUtil.showMessage(this, "便签内容不能为空");
@@ -120,8 +118,8 @@ public class NoteDetailActivity extends AppCompatActivity {
                 local_title = local_content.substring(0, 20) + "...";
             }
         }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         local_date = mBtnTime.getText().toString().equals("修改时间") ? sdf.format(new Date()) : mBtnTime.getText().toString();
-//        SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
         SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
         mDatabase.execSQL("create table if not exists "
                 + Constant.TABLE_NOTE + "("
@@ -130,13 +128,12 @@ public class NoteDetailActivity extends AppCompatActivity {
                 + Constant.COLUMN_TITLE + " text,"
                 + Constant.COLUMN_CONTENT + " text)");
         ContentValues mValues = new ContentValues();
-        mValues.put("date", local_date);
-        mValues.put("title", local_title);
-        mValues.put("content", local_content);
+        mValues.put(Constant.COLUMN_DATE, local_date);
+        mValues.put(Constant.COLUMN_TITLE, local_title);
+        mValues.put(Constant.COLUMN_CONTENT, local_content);
         mDatabase.insert(Constant.TABLE_NOTE, null, mValues);
         mValues.clear();
         mDatabase.close();
-//        PreferenUtil.put(NoteDetailActivity.this, "notetb_is_exist", "actually_not");
         ToastUtil.showMessage(this, "保存便签成功");
     }
 

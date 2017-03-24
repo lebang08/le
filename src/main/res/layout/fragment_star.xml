@@ -21,15 +21,15 @@
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:title="今时今往">
+            app:title="星语星运">
 
             <ImageView
                 android:id="@+id/backdrop"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
-                android:background="@drawable/title_today"
-                android:scaleType="fitCenter"
+                android:scaleType="centerCrop"
+                android:src="@drawable/title_star"
                 app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar
@@ -53,22 +53,22 @@
             android:orientation="vertical">
 
             <ListView
-                android:id="@+id/listview_fragment_a"
+                android:id="@+id/listview_fragment_b"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/text_margin"
-                android:divider="#00000000"
-                android:dividerHeight="16dp" />
+                android:divider="#3f51b5"
+                android:dividerHeight="0.5dp" />
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_fragment_a"
+        android:id="@+id/fab_fragment_b"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_dialer"
+        android:src="@mipmap/icon_write"
         app:backgroundTint="#3f51b5"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"

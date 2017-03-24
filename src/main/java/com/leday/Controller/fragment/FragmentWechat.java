@@ -66,7 +66,7 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_c, container, false);
+        View view = inflater.inflate(R.layout.fragment_wechat, container, false);
         initDisplay();
         initView(view);
         requestData(Constant.REFRESH_DATA);

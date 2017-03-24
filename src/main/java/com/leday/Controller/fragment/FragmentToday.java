@@ -52,7 +52,7 @@ public class FragmentToday extends BaseFragment implements AdapterView.OnItemCli
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_a, container, false);
+        View view = inflater.inflate(R.layout.fragment_today, container, false);
 
         initView(view);
         getJson();

@@ -26,7 +26,7 @@ public class FragmentStar extends BaseFragment implements AdapterView.OnItemClic
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_b, container, false);
+        View view = inflater.inflate(R.layout.fragment_star, container, false);
 
         initView(view);
         DoEvent();

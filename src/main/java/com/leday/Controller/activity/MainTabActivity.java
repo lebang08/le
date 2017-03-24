@@ -1,7 +1,9 @@
 package com.leday.Controller.activity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -140,17 +142,21 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
         mViewPager.setOffscreenPageLimit(3);
         mViewPager.setOnPageChangeListener(this);
 
-        //转移数据库
-        new AlertDialog.Builder(this)
-                .setTitle("亲，收藏夹优化啦")
-                .setMessage("部分亲反馈后，现在修改了收藏夹的位置和结构啦，迁移后您可以方便的在本地保留/迁移您的收藏夹数据库哦,拒绝迁移可能导致数据丢失")
-                .setPositiveButton("现在迁移", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        transferDatabase(true);
-                    }
-                }).setNegativeButton("不再提醒", null)
-                .show();
+        //提示转移数据库
+        try {
+            if (getPackageManager().getPackageInfo("com.leday", 0).versionCode < 31)
+                new AlertDialog.Builder(this)
+                        .setTitle("亲，收藏夹优化啦")
+                        .setMessage("部分亲反馈后，现在修改了收藏夹的位置和结构啦，迁移后您可以方便的在手机保留/迁移您的收藏夹、便签等数据哦,拒绝迁移可能导致数据丢失")
+                        .setPositiveButton("现在迁移", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                transferDatabase(true);
+                            }
+                        }).setNegativeButton("下次提醒", null).show();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     //迁移表用
@@ -168,6 +174,11 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
         if (!need_transfer) {
             return;
         }
+        ProgressDialog mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle("更新题库数据，请稍候");
+        mProgressDialog.setMessage("Waiting...");
+        mProgressDialog.setCanceledOnTouchOutside(false);
+        mProgressDialog.show();
         //取出历史上的今天
         SQLiteDatabase database_orgina = new DbHelper(this, "leday.db").getWritableDatabase();
         String isNone_today_table = DbUtil.queryToString(database_orgina, Constant.TABLE_SQLITE_MASTER, Constant.COLUMN_NAME, Constant.COLUMN_TABLE_NAME, "todaytb");
@@ -273,7 +284,7 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
                     + Constant.COLUMN_TITLE + " text, "
                     + Constant.COLUMN_URL + " text)";
             database_new.execSQL(sql_create_wechat);
-            for (int i = 0; i < mTodayList.size(); i++) {
+            for (int i = 0; i < mWechatList.size(); i++) {
                 String sql_insert_wechat = "INSERT INTO " + Constant.TABLE_WECHAT + "("
                         + Constant.COLUMN_TITLE + ","
                         + Constant.COLUMN_URL + ")VALUES(\""
@@ -323,7 +334,7 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
         database_new.close();
-
+        mProgressDialog.cancel();
         ToastUtil.show(this, "恭喜您,迁移完成啦", Toast.LENGTH_SHORT);
     }
 

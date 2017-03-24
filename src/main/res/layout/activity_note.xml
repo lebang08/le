@@ -59,7 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:onClick="doChange"
-        android:src="@android:drawable/ic_dialog_dialer"
+        android:src="@mipmap/icon_write"
         app:backgroundTint="#3f51b5"
         app:layout_anchor="@id/recycler_activity_note"
         app:layout_anchorGravity="bottom|end"

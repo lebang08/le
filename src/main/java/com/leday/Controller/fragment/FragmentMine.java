@@ -35,7 +35,7 @@ public class FragmentMine extends BaseFragment implements AdapterView.OnItemClic
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_d, container, false);
+        View view = inflater.inflate(R.layout.fragment_talk, container, false);
         initView(view);
         DoEvent();
         return view;
