@@ -17,23 +17,24 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.leday.Common.Constant;
 import com.leday.R;
+import com.leday.Util.DbHelper;
 import com.leday.Util.PreferenUtil;
+import com.leday.Util.SDCardUtil;
 import com.leday.Util.ToastUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by Administrator on 2016/10/26.
+ * Created by LeBang on 2016/10/26
  */
 public class NoteDetailActivity extends AppCompatActivity {
 
     private EditText mTitle, mContent;
     private Button mBtnTime;
     private String local_content, local_title, local_date, local_style;
-
-    private SQLiteDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +56,14 @@ public class NoteDetailActivity extends AppCompatActivity {
         local_title = getIntent().getStringExtra("local_title");
         local_date = getIntent().getStringExtra("local_date");
         local_content = getIntent().getStringExtra("local_content");
-
         mTitle = (EditText) findViewById(R.id.edt_notedetial_title);
         mContent = (EditText) findViewById(R.id.edt_notedetial_content);
         mBtnTime = (Button) findViewById(R.id.btn_notedetial_time);
 
-        mTitle.setText(local_title);
-        mContent.setText(local_content);
+        if (!TextUtils.isEmpty(local_title)) {
+            mTitle.setText(local_title);
+            mContent.setText(local_content);
+        }
         //设置便签风格
         if (local_style.equals("violet")) {
             PreferenUtil.put(this, "note_style", "violet");
@@ -78,8 +80,6 @@ public class NoteDetailActivity extends AppCompatActivity {
 
     /**
      * 时间选择器
-     *
-     * @param view
      */
     public void doTimePick(View view) {
         new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -92,8 +92,6 @@ public class NoteDetailActivity extends AppCompatActivity {
 
     /**
      * 跳往图灵
-     *
-     * @param view
      */
     public void doAsk(View view) {
         startActivity(new Intent(this, TalkActivity.class));
@@ -123,16 +121,22 @@ public class NoteDetailActivity extends AppCompatActivity {
             }
         }
         local_date = mBtnTime.getText().toString().equals("修改时间") ? sdf.format(new Date()) : mBtnTime.getText().toString();
-        mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-        mDatabase.execSQL("create table if not exists notetb(_id integer primary key autoincrement,date date,title text,content text not null)");
+//        SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+        SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+        mDatabase.execSQL("create table if not exists "
+                + Constant.TABLE_NOTE + "("
+                + Constant.COLUMN_ID + " integer primary key autoincrement,"
+                + Constant.COLUMN_DATE + " date,"
+                + Constant.COLUMN_TITLE + " text,"
+                + Constant.COLUMN_CONTENT + " text)");
         ContentValues mValues = new ContentValues();
         mValues.put("date", local_date);
         mValues.put("title", local_title);
         mValues.put("content", local_content);
-        mDatabase.insert("notetb", null, mValues);
+        mDatabase.insert(Constant.TABLE_NOTE, null, mValues);
         mValues.clear();
         mDatabase.close();
-        PreferenUtil.put(NoteDetailActivity.this, "notetb_is_exist", "actually_not");
+//        PreferenUtil.put(NoteDetailActivity.this, "notetb_is_exist", "actually_not");
         ToastUtil.showMessage(this, "保存便签成功");
     }
 

@@ -24,6 +24,8 @@ import com.leday.Controller.fragment.FragmentMine;
 import com.leday.Controller.fragment.FragmentStar;
 import com.leday.Controller.fragment.FragmentToday;
 import com.leday.Controller.fragment.FragmentWechat;
+import com.leday.Model.Note;
+import com.leday.Model.Talk;
 import com.leday.Model.Today;
 import com.leday.Model.Wechat;
 import com.leday.R;
@@ -156,6 +158,10 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
     private Today mmToday;
     private ArrayList<Wechat> mWechatList = new ArrayList<>();
     private Wechat mWechat;
+    private ArrayList<Note> mNoteList = new ArrayList<>();
+    private Note mNote;
+    private ArrayList<Talk> mTalkList = new ArrayList<>();
+    private Talk mTalk;
 
     private void transferDatabase(boolean need_transfer) {
         //TODO 拿出自己的数据库,通过PreferenceUtil或者文件是否存在判断是否需要转移
@@ -201,6 +207,43 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
             database_orgina.setTransactionSuccessful();
             database_orgina.endTransaction();
         }
+        //取出便签
+        String isNone_note_table = DbUtil.queryToString(database_orgina, Constant.TABLE_SQLITE_MASTER, Constant.COLUMN_NAME, Constant.COLUMN_TABLE_NAME, "notetb");
+        if (!TextUtils.equals(isNone_note_table, Constant.NONE)) {
+            Cursor cursor_note = database_orgina.query("notetb", null, null, null, null, null, null);
+            database_orgina.beginTransaction();
+            if (cursor_note != null) {
+                while (cursor_note.moveToNext()) {
+                    mNote = new Note();
+                    mNote.setTime(cursor_note.getString(cursor_note.getColumnIndex(Constant.COLUMN_DATE)));
+                    mNote.setTitle(cursor_note.getString(cursor_note.getColumnIndex(Constant.COLUMN_TITLE)));
+                    mNote.setContent(cursor_note.getString(cursor_note.getColumnIndex(Constant.COLUMN_CONTENT)));
+                    mNoteList.add(mNote);
+                }
+                cursor_note.close();
+            }
+            database_orgina.setTransactionSuccessful();
+            database_orgina.endTransaction();
+        }
+        //取出图灵对话
+        String isNone_talk_table = DbUtil.queryToString(database_orgina, Constant.TABLE_SQLITE_MASTER, Constant.COLUMN_NAME, Constant.COLUMN_TABLE_NAME, "talktb");
+        if (!TextUtils.equals(isNone_talk_table, Constant.NONE)) {
+            Cursor cursor_note = database_orgina.query("talktb", null, null, null, null, null, null);
+            database_orgina.beginTransaction();
+            if (cursor_note != null) {
+                while (cursor_note.moveToNext()) {
+                    mTalk = new Talk();
+                    mTalk.setMsg(cursor_note.getString(cursor_note.getColumnIndex(Constant.COLUMN_MESSAGE)));
+                    //取一个String 暂做过渡
+                    mTalk.setName(cursor_note.getString(cursor_note.getColumnIndex(Constant.COLUMN_TYPE)));
+                    mTalk.setTime(cursor_note.getString(cursor_note.getColumnIndex(Constant.COLUMN_TIME)));
+                    mTalkList.add(mTalk);
+                }
+                cursor_note.close();
+            }
+            database_orgina.setTransactionSuccessful();
+            database_orgina.endTransaction();
+        }
         database_orgina.close();
 
         SQLiteDatabase database_new = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
@@ -237,6 +280,46 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
                         + StringUtil.transferString(mWechatList.get(i).getTitle()) + "\",\""
                         + StringUtil.transferString(mWechatList.get(i).getUrl()) + "\");";
                 database_new.execSQL(sql_insert_wechat);
+            }
+        }
+        //迁移便签
+        if (!TextUtils.equals(isNone_note_table, Constant.NONE)) {
+            String sql_create_note = "CREATE TABLE IF NOT EXISTS "
+                    + Constant.TABLE_NOTE + "("
+                    + Constant.COLUMN_ID + " integer primary key autoincrement,"
+                    + Constant.COLUMN_DATE + " date,"
+                    + Constant.COLUMN_TITLE + " text,"
+                    + Constant.COLUMN_CONTENT + " text)";
+            database_new.execSQL(sql_create_note);
+            for (int i = 0; i < mNoteList.size(); i++) {
+                String sql_insert_note = "INSERT INTO " + Constant.TABLE_NOTE + "("
+                        + Constant.COLUMN_DATE + ","
+                        + Constant.COLUMN_TITLE + ","
+                        + Constant.COLUMN_CONTENT + ")VALUES(\""
+                        + StringUtil.transferString(mNoteList.get(i).getTime()) + "\",\""
+                        + StringUtil.transferString(mNoteList.get(i).getTitle()) + "\",\""
+                        + StringUtil.transferString(mNoteList.get(i).getContent()) + "\");";
+                database_new.execSQL(sql_insert_note);
+            }
+        }
+        //迁移图灵机器人
+        if (!TextUtils.equals(isNone_talk_table, Constant.NONE)) {
+            String sql_create_talk = "CREATE TABLE IF NOT EXISTS "
+                    + Constant.TABLE_TALK + "("
+                    + Constant.COLUMN_ID + " integer primary key autoincrement,"
+                    + Constant.COLUMN_MESSAGE + " text,"
+                    + Constant.COLUMN_TYPE + " text,"
+                    + Constant.COLUMN_TIME + " text)";
+            database_new.execSQL(sql_create_talk);
+            for (int i = 0; i < mTalkList.size(); i++) {
+                String sql_insert_talk = "INSERT INTO " + Constant.TABLE_TALK + "("
+                        + Constant.COLUMN_MESSAGE + ","
+                        + Constant.COLUMN_TYPE + ","
+                        + Constant.COLUMN_TIME + ")VALUES(\""
+                        + StringUtil.transferString(mTalkList.get(i).getMsg()) + "\",\""
+                        + StringUtil.transferString(mTalkList.get(i).getName()) + "\",\""
+                        + StringUtil.transferString(mTalkList.get(i).getTime()) + "\");";
+                database_new.execSQL(sql_insert_talk);
             }
         }
         database_new.close();

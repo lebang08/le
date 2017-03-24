@@ -10,17 +10,25 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leday.BaseActivity;
+import com.leday.Common.Constant;
 import com.leday.Controller.adapter.NoteAdapter;
 import com.leday.Model.Note;
 import com.leday.R;
+import com.leday.Util.DbHelper;
+import com.leday.Util.DbUtil;
 import com.leday.Util.Interface.RecyclerItemClickListener;
 import com.leday.Util.PreferenUtil;
+import com.leday.Util.SDCardUtil;
+import com.leday.Util.ToastUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -32,14 +40,12 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
 
     private XRecyclerView mRecyclerView;
     private NoteAdapter mAdapter;
-    private ArrayList<Note> mList = new ArrayList<>();
-
-    private SQLiteDatabase mDatabase;
+    private ArrayList<Note> mNoteList = new ArrayList<>();
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        mList.clear();
+        mNoteList.clear();
         initData();
         mAdapter.notifyDataSetChanged();
     }
@@ -53,16 +59,15 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
     }
 
     private void initView() {
+        initData();
+
         mRecyclerView = (XRecyclerView) findViewById(R.id.recycler_activity_note);
         mTitle = (TextView) findViewById(R.id.txt_note_title);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setHasFixedSize(true);
         doRecyclerViewItem();
-
-        initData();
-
-        mAdapter = new NoteAdapter(this, mList);
+        mAdapter = new NoteAdapter(this, mNoteList);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLoadingListener(this);
     }
@@ -71,21 +76,30 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
      * 初始化数据
      */
     private void initData() {
-        if (!PreferenUtil.contains(NoteActivity.this, "notetb_is_exist")) {
-            mTitle.setText("还没有便签，新建一个吧");
+        File file = new File(SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG);
+        if (!file.exists()) {
+            ToastUtil.show(this, "您的收藏夹空空如也", Toast.LENGTH_SHORT);
             return;
         }
-        mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+        SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
         //数据库查询
-        Cursor mCursor = mDatabase.query("notetb", null, "_id>?", new String[]{"0"}, null, null, "date desc");
+        String isNone_table = DbUtil.queryToString(mDatabase, Constant.TABLE_SQLITE_MASTER, Constant.COLUMN_NAME, Constant.COLUMN_TABLE_NAME, Constant.TABLE_NOTE);
+        if (TextUtils.equals(isNone_table, Constant.NONE)) {
+            mDatabase.close();
+            ToastUtil.show(this, "您的便签夹空空如也", Toast.LENGTH_SHORT);
+            return;
+        }
+//        mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+        //数据库查询
+        Cursor mCursor = mDatabase.query(Constant.TABLE_NOTE, null, null, null, null, null, Constant.COLUMN_DATE + " desc");
         if (mCursor != null) {
             Note note;
             while (mCursor.moveToNext()) {
                 note = new Note();
-                note.setTime(mCursor.getString(mCursor.getColumnIndex("date")));
-                note.setTitle(mCursor.getString(mCursor.getColumnIndex("title")));
-                note.setContent(mCursor.getString(mCursor.getColumnIndex("content")));
-                mList.add(note);
+                note.setTime(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_DATE)));
+                note.setTitle(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_TITLE)));
+                note.setContent(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_CONTENT)));
+                mNoteList.add(note);
             }
             mCursor.close();
         }
@@ -94,8 +108,6 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
 
     /**
      * 修改便签风格
-     *
-     * @param view
      */
     public void doChange(View view) {
         Snackbar.make(view, "修改便签底色风格", Snackbar.LENGTH_SHORT)
@@ -125,8 +137,6 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
 
     /**
      * 新建便签
-     *
-     * @param view
      */
     public void doWrite(View view) {
         startActivity(new Intent(NoteActivity.this, NoteDetailActivity.class));
@@ -150,12 +160,12 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
                         .setPositiveButton("确认", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-                                String local_delete = "DELETE FROM notetb WHERE date = '" + mList.get(position - 1).getTime() + "'";
+                                SQLiteDatabase mDatabase = new DbHelper(NoteActivity.this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+                                String local_delete = "DELETE FROM " + Constant.TABLE_NOTE + " WHERE " + Constant.COLUMN_DATE + " = \"" + mNoteList.get(position - 1).getTime() + "\"";
                                 mDatabase.execSQL(local_delete);
                                 mDatabase.close();
                                 //带动画的效果则不能用notyfyDataSetChanged(),要用notifyItemInserted(position)与notifyItemRemoved(position)
-                                mList.remove(position - 1);
+                                mNoteList.remove(position - 1);
                                 mAdapter.notifyItemRemoved(position);
                             }
                         })

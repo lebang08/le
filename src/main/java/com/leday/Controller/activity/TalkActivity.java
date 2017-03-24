@@ -14,12 +14,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.leday.BaseActivity;
-import com.leday.R;
-import com.leday.Util.PreferenUtil;
-import com.leday.Util.TalkHttpUtils;
-import com.leday.Util.ToastUtil;
+import com.leday.Common.Constant;
 import com.leday.Controller.adapter.TalkAdapter;
 import com.leday.Model.Talk;
+import com.leday.R;
+import com.leday.Util.DbHelper;
+import com.leday.Util.PreferenUtil;
+import com.leday.Util.SDCardUtil;
+import com.leday.Util.TalkHttpUtils;
+import com.leday.Util.ToastUtil;
 import com.lzy.okgo.OkGo;
 
 import java.text.SimpleDateFormat;
@@ -44,13 +47,22 @@ public class TalkActivity extends BaseActivity {
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(mDatas.size() - 1);
             //这里将返回的消息放入数据库
-            SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-            mDatabase.execSQL("create table if not exists talktb(_id integer primary key autoincrement,message text not null,type text not null,time text not null)");
+            SQLiteDatabase mDatabase = new DbHelper(TalkActivity.this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+            mDatabase.execSQL("create table if not exists " + Constant.TABLE_TALK + "(" + Constant.COLUMN_ID + " integer primary key autoincrement,"
+                    + Constant.COLUMN_MESSAGE + " text,"
+                    + Constant.COLUMN_TYPE + " text,"
+                    + Constant.COLUMN_TIME + " text)");
+//            SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+//            mDatabase.execSQL("create table if not exists talktb(_id integer primary key autoincrement,message text not null,type text not null,time text not null)");
             ContentValues mValues = new ContentValues();
-            mValues.put("message", fromMessge.getMsg());
-            mValues.put("type", fromMessge.getType().toString());
-            mValues.put("time", fromMessge.getTime());
-            mDatabase.insert("talktb", null, mValues);
+            mValues.put(Constant.COLUMN_MESSAGE, fromMessge.getMsg());
+            mValues.put(Constant.COLUMN_TYPE, fromMessge.getType().toString());
+            mValues.put(Constant.COLUMN_TIME, fromMessge.getTime());
+            mDatabase.insert(Constant.TABLE_TALK, null, mValues);
+//            mValues.put("message", fromMessge.getMsg());
+//            mValues.put("type", fromMessge.getType().toString());
+//            mValues.put("time", fromMessge.getTime());
+//            mDatabase.insert("talktb", null, mValues);
             mValues.clear();
             mDatabase.close();
         }
@@ -93,20 +105,27 @@ public class TalkActivity extends BaseActivity {
         } else {
             Talk talk;
             // 此处应该调入数据库
-            SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-            //数据库查询
-            Cursor mCursor = mDatabase.query("talktb", null, "_id>?", new String[]{"0"}, null, null, "_id");
+            SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+            Cursor mCursor = mDatabase.query(Constant.TABLE_TALK, null, null, null, null, null, null);
+//            SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+//            Cursor mCursor = mDatabase.query("talktb", null, "_id>?", new String[]{"0"}, null, null, "_id");
             if (mCursor != null) {
-                String[] columns = mCursor.getColumnNames();
                 while (mCursor.moveToNext()) {
                     talk = new Talk();
-                    talk.setMsg(mCursor.getString(mCursor.getColumnIndex("message")));
-                    if (TextUtils.equals(mCursor.getString(mCursor.getColumnIndex("type")), "INCOMING")) {
+                    talk.setMsg(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_MESSAGE)));
+                    if (TextUtils.equals(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_TYPE)), "INCOMING")) {
                         talk.setType(Talk.Type.INCOMING);
                     } else {
                         talk.setType(Talk.Type.OUTCOMING);
                     }
-                    talk.setTime(mCursor.getString(mCursor.getColumnIndex("time")));
+                    talk.setTime(mCursor.getString(mCursor.getColumnIndex(Constant.COLUMN_TIME)));
+//                    talk.setMsg(mCursor.getString(mCursor.getColumnIndex("message")));
+//                    if (TextUtils.equals(mCursor.getString(mCursor.getColumnIndex("type")), "INCOMING")) {
+//                        talk.setType(Talk.Type.INCOMING);
+//                    } else {
+//                        talk.setType(Talk.Type.OUTCOMING);
+//                    }
+//                    talk.setTime(mCursor.getString(mCursor.getColumnIndex("time")));
                     mDatas.add(talk);
                 }
                 mCursor.close();
@@ -118,7 +137,7 @@ public class TalkActivity extends BaseActivity {
 //            mListView.setSelection(mListView.getBottom());
 //            mListView.smoothScrollToPosition(0);//移动到首部
 //            mListView.smoothScrollToPosition(mAdapter.getCount() - 1);//移动到尾部
-            mListView.setSelection(mDatas.size()-1);
+            mListView.setSelection(mDatas.size() - 1);
         }
     }
 
@@ -140,13 +159,24 @@ public class TalkActivity extends BaseActivity {
                 toMessage.setMsg(toMsg);
                 // 这里将发送的数据放入数据库
                 PreferenUtil.put(TalkActivity.this, "mDatabase", "exist");
-                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-                mDatabase.execSQL("create table if not exists talktb(_id integer primary key autoincrement,message text not null,type text not null,time text not null)");
+
+                SQLiteDatabase mDatabase = new DbHelper(TalkActivity.this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+                mDatabase.execSQL("create table if not exists " + Constant.TABLE_TALK + "(" + Constant.COLUMN_ID + " integer primary key autoincrement,"
+                        + Constant.COLUMN_MESSAGE + " text,"
+                        + Constant.COLUMN_TYPE + " text,"
+                        + Constant.COLUMN_TIME + " text)");
+
+//                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
+//                mDatabase.execSQL("create table if not exists talktb(_id integer primary key autoincrement,message text not null,type text not null,time text not null)");
                 ContentValues mValues = new ContentValues();
-                mValues.put("message", toMessage.getMsg());
-                mValues.put("type", toMessage.getType().toString());
-                mValues.put("time", toMessage.getTime());
-                mDatabase.insert("talktb", null, mValues);
+                mValues.put(Constant.COLUMN_MESSAGE, toMessage.getMsg());
+                mValues.put(Constant.COLUMN_TYPE, toMessage.getType().toString());
+                mValues.put(Constant.COLUMN_TIME, toMessage.getTime());
+                mDatabase.insert(Constant.TABLE_TALK, null, mValues);
+//                mValues.put("message", toMessage.getMsg());
+//                mValues.put("type", toMessage.getType().toString());
+//                mValues.put("time", toMessage.getTime());
+//                mDatabase.insert("talktb", null, mValues);
                 mValues.clear();
                 mDatabase.close();
 

@@ -1,25 +1,18 @@
 package com.leday.Model;
 
-import java.sql.Date;
+import java.io.Serializable;
 
 /**
- * Created by Administrator on 2016/10/27.
+ * Created by LeBang on 2016/10/27
  */
-public class Note {
+public class Note implements Serializable {
 
-    private Date date;
+    //    private Date date;
     private String time;
     private String Title;
     private String Content;
 
     public Note() {
-    }
-
-    public Note(Date date, String time, String title, String content) {
-        this.date = date;
-        this.time = time;
-        Title = title;
-        Content = content;
     }
 
     public String getTime() {
@@ -30,13 +23,13 @@ public class Note {
         this.time = time;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
+//   public Date getDate() {
+//        return date;
+//    }
+//
+//    public void setDate(Date date) {
+//        this.date = date;
+//    }
 
     public String getTitle() {
         return Title;
@@ -54,13 +47,13 @@ public class Note {
         Content = content;
     }
 
-    @Override
-    public String toString() {
-        return "Note{" +
-                "date=" + date +
-                ", time='" + time + '\'' +
-                ", Title='" + Title + '\'' +
-                ", Content='" + Content + '\'' +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Note{" +
+//                "date=" + date +
+//                ", time='" + time + '\'' +
+//                ", Title='" + Title + '\'' +
+//                ", Content='" + Content + '\'' +
+//                '}';
+//    }
 }
