@@ -142,6 +142,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
 //                //权宜之计，做个标识给FavoriteActivity用
 //                PreferenUtil.put(TodayActivity.this, "todaytb_is_exist", "actually_not");
 
+                //Todo home doing
                 /**新的数据库*/
                 SQLiteDatabase database_new = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
                 String sql_create = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
