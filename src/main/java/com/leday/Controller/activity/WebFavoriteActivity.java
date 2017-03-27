@@ -56,7 +56,7 @@ public class WebFavoriteActivity extends BaseActivity implements AdapterView.OnI
             mTitleList.add(mWechatList.get(i).getTitle());
         }
         //适配器
-        mAdapter = new ArrayAdapter(WebFavoriteActivity.this, android.R.layout.simple_list_item_1, mTitleList);
+        mAdapter = new ArrayAdapter(WebFavoriteActivity.this, R.layout.item_favorite_web, mTitleList);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
     }

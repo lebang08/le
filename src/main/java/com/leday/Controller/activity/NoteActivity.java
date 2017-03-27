@@ -109,7 +109,7 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
     /**
      * 修改便签风格
      */
-    public void doChange(View view) {
+    public void doWrite(View view) {
         Snackbar.make(view, "修改便签底色风格", Snackbar.LENGTH_SHORT)
                 .setActionTextColor(Color.parseColor("#3f51b5"))
                 .setAction("确定", new View.OnClickListener() {
@@ -138,7 +138,7 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
     /**
      * 新建便签
      */
-    public void doWrite(View view) {
+    public void doChange(View view) {
         startActivity(new Intent(NoteActivity.this, NoteDetailActivity.class));
     }
 

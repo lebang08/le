@@ -56,7 +56,7 @@ public class TodayFavoriteActivity extends BaseActivity implements AdapterView.O
         //数据
         queryDatabase();
         //适配器
-        mAdapter = new ArrayAdapter(TodayFavoriteActivity.this, android.R.layout.simple_list_item_1, mDataList);
+        mAdapter = new ArrayAdapter(TodayFavoriteActivity.this, R.layout.item_favorite_history, mDataList);
         mListView.setAdapter(mAdapter);
         mListView.setOnItemClickListener(this);
         mListView.setOnItemLongClickListener(this);
