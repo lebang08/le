@@ -45,7 +45,7 @@ public class NoteDetailActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeAsUpIndicator(R.drawable.arrow_white_back);
+//            actionBar.setHomeAsUpIndicator(R.drawable.arrow_white_back);
         }
 
         initView();

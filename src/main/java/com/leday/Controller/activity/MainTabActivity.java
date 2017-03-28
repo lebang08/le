@@ -1,5 +1,6 @@
 package com.leday.Controller.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.leday.BaseActivity;
 import com.leday.Common.Constant;
 import com.leday.Controller.Service.UpdateService;
 import com.leday.Controller.fragment.FragmentMine;
@@ -34,6 +35,7 @@ import com.leday.R;
 import com.leday.Util.DbHelper;
 import com.leday.Util.DbUtil;
 import com.leday.Util.NetUtil;
+import com.leday.Util.PreferenUtil;
 import com.leday.Util.SDCardUtil;
 import com.leday.Util.StringUtil;
 import com.leday.Util.ToastUtil;
@@ -42,7 +44,7 @@ import com.leday.Util.UpdateUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainTabActivity extends AppCompatActivity implements View.OnClickListener, ViewPager.OnPageChangeListener {
+public class MainTabActivity extends BaseActivity implements View.OnClickListener, ViewPager.OnPageChangeListener {
 
     private ViewPager mViewPager;
     private List<Fragment> mFragmentList;
@@ -144,19 +146,33 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
 
         //提示转移数据库
         try {
-            if (getPackageManager().getPackageInfo("com.leday", 0).versionCode < 31)
-                new AlertDialog.Builder(this)
-                        .setTitle("亲，收藏夹优化啦")
-                        .setMessage("部分亲反馈后，现在修改了收藏夹的位置和结构啦，迁移后您可以方便的在手机保留/迁移您的收藏夹、便签等数据哦,拒绝迁移可能导致数据丢失")
-                        .setPositiveButton("现在迁移", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                transferDatabase(true);
-                            }
-                        }).setNegativeButton("下次提醒", null).show();
+            if (getPackageManager().getPackageInfo("com.leday", 0).versionCode < 31) {
+                if (!PreferenUtil.get(this,Constant.IsTransfer,"").equals(Constant.IsTransfer)){
+                    if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        doStorePermission();
+                    } else {
+                        //没权限，进行权限请求
+                        requestPermission(Constant.CODE_WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    }
+                }
+            }
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void doStorePermission() {
+        super.doStorePermission();
+        new AlertDialog.Builder(this)
+                .setTitle("亲，收藏夹优化啦")
+                .setMessage("部分亲反馈后，现在修改了收藏夹的位置和结构啦，迁移后您可以方便的在手机保留/迁移您的收藏夹、便签等数据哦,拒绝迁移可能导致数据丢失")
+                .setPositiveButton("现在迁移", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        transferDatabase(true);
+                    }
+                }).setNegativeButton("下次提醒", null).show();
     }
 
     //迁移表用
@@ -335,6 +351,7 @@ public class MainTabActivity extends AppCompatActivity implements View.OnClickLi
         }
         database_new.close();
         mProgressDialog.cancel();
+        PreferenUtil.put(this,Constant.IsTransfer,Constant.IsTransfer);
         ToastUtil.show(this, "恭喜您,迁移完成啦", Toast.LENGTH_SHORT);
     }
 

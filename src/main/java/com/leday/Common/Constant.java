@@ -12,6 +12,10 @@ public class Constant {
 
     public static final String NONE = "none";
 
+    //权限
+    public static final int CODE_WRITE_EXTERNAL_STORAGE = 0;
+    public static final String IsTransfer = "yes";
+
     //数据库名
     public static final String DATABASE_LEBANG = "LeBang.db";
     //数据表名
