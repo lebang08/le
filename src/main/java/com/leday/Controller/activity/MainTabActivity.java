@@ -145,34 +145,34 @@ public class MainTabActivity extends BaseActivity implements View.OnClickListene
         mViewPager.setOnPageChangeListener(this);
 
         //提示转移数据库
-        try {
-            if (getPackageManager().getPackageInfo("com.leday", 0).versionCode < 31) {
-                if (!PreferenUtil.get(this,Constant.IsTransfer,"").equals(Constant.IsTransfer)){
-                    if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        doStorePermission();
-                    } else {
-                        //没权限，进行权限请求
-                        requestPermission(Constant.CODE_WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                    }
-                }
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            doStorePermission();
+        } else {
+            //没权限，进行权限请求
+            requestPermission(Constant.CODE_WRITE_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
     }
 
     @Override
     public void doStorePermission() {
         super.doStorePermission();
-        new AlertDialog.Builder(this)
-                .setTitle("亲，收藏夹优化啦")
-                .setMessage("部分亲反馈后，现在修改了收藏夹的位置和结构啦，迁移后您可以方便的在手机保留/迁移您的收藏夹、便签等数据哦,拒绝迁移可能导致数据丢失")
-                .setPositiveButton("现在迁移", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        transferDatabase(true);
-                    }
-                }).setNegativeButton("下次提醒", null).show();
+        try {
+            if (getPackageManager().getPackageInfo("com.leday", 0).versionCode < 31) {
+                if (!PreferenUtil.get(this, Constant.IsTransfer, "").equals(Constant.IsTransfer)) {
+                    new AlertDialog.Builder(this)
+                            .setTitle("亲，收藏夹优化啦")
+                            .setMessage("部分亲反馈后，现在修改了收藏夹的位置和结构啦，迁移后您可以方便的在手机保留/迁移您的收藏夹、便签等数据哦,拒绝迁移可能导致数据丢失")
+                            .setPositiveButton("现在迁移", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    transferDatabase(true);
+                                }
+                            }).setNegativeButton("下次提醒", null).show();
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     //迁移表用
@@ -351,7 +351,7 @@ public class MainTabActivity extends BaseActivity implements View.OnClickListene
         }
         database_new.close();
         mProgressDialog.cancel();
-        PreferenUtil.put(this,Constant.IsTransfer,Constant.IsTransfer);
+        PreferenUtil.put(this, Constant.IsTransfer, Constant.IsTransfer);
         ToastUtil.show(this, "恭喜您,迁移完成啦", Toast.LENGTH_SHORT);
     }
 

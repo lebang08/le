@@ -1,5 +1,6 @@
 package com.leday.Controller.activity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -150,19 +151,27 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
                         + Constant.COLUMN_TITLE + " text, "
                         + Constant.COLUMN_CONTENT + " text)";
                 database_new.execSQL(sql_create);
-
                 String sql_select = "SELECT * FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_DATE + " =? AND " + Constant.COLUMN_TITLE + " =?";
                 String isNone = DbUtil.cursorToNotNullString(database_new.rawQuery(sql_select, new String[]{mToday.getDate(), mToday.getTitle()}));
                 if (TextUtils.equals(isNone, Constant.NONE)) {
-                    String sql_insert = "INSERT INTO " + Constant.TABLE_TODAY + "("
-                            + Constant.COLUMN_DATE + ","
-                            + Constant.COLUMN_TITLE + ","
-                            + Constant.COLUMN_CONTENT + ")VALUES(\""
-                            + mToday.getDate() + "\",\""
-                            + mToday.getTitle() + "\",\""
-                            + local_content + "\");";
-                    database_new.execSQL(sql_insert);
-                    Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
+                    ContentValues mValues = new ContentValues();
+                    mValues.put(Constant.COLUMN_DATE, mToday.getDate());
+                    mValues.put(Constant.COLUMN_TITLE, mToday.getTitle());
+                    mValues.put(Constant.COLUMN_CONTENT, local_content);
+                    long count = database_new.insert(Constant.TABLE_TODAY, null, mValues);
+                    mValues.clear();
+//                    String sql_insert = "INSERT INTO " + Constant.TABLE_TODAY + "("
+//                            + Constant.COLUMN_DATE + ","
+//                            + Constant.COLUMN_TITLE + ","
+//                            + Constant.COLUMN_CONTENT + ")VALUES(\""
+//                            + StringUtil.transferString(mToday.getDate()) + "\",\""
+//                            + StringUtil.transferString(mToday.getTitle()) + "\",\""
+//                            + StringUtil.transferString(local_content) + "\");";
+//                    database_new.execSQL(sql_insert);
+                    if (count > 0)
+                        Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
+                    else
+                        Snackbar.make(view, "收藏失败!", Snackbar.LENGTH_SHORT).show();
                 } else {
                     Snackbar.make(view, "已经收藏啦，可以前往收藏夹查看", Snackbar.LENGTH_SHORT).show();
                 }

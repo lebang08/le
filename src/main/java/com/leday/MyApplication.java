@@ -2,6 +2,7 @@ package com.leday;
 
 import android.app.Application;
 
+import com.leday.Util.LogUtil;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
 import com.lzy.okgo.cache.CacheMode;
@@ -77,5 +78,11 @@ public class MyApplication extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        LogUtil.e("onTrimMemory level =" + level);
     }
 }

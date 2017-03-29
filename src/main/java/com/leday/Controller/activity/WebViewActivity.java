@@ -1,5 +1,6 @@
 package com.leday.Controller.activity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -20,7 +21,6 @@ import com.leday.Model.Wechat;
 import com.leday.R;
 import com.leday.Util.DbHelper;
 import com.leday.Util.DbUtil;
-import com.leday.Util.PreferenUtil;
 import com.leday.Util.SDCardUtil;
 
 public class WebViewActivity extends BaseActivity implements View.OnClickListener {
@@ -116,13 +116,22 @@ public class WebViewActivity extends BaseActivity implements View.OnClickListene
                 String sql_select = "SELECT * FROM " + Constant.TABLE_WECHAT + " WHERE " + Constant.COLUMN_URL + " =? AND " + Constant.COLUMN_TITLE + " =?";
                 String isNone = DbUtil.cursorToNotNullString(database_new.rawQuery(sql_select, new String[]{mWechat.getUrl(), mWechat.getTitle()}));
                 if (TextUtils.equals(isNone, Constant.NONE)) {
-                    String sql_insert = "INSERT INTO " + Constant.TABLE_WECHAT + "("
-                            + Constant.COLUMN_TITLE + ","
-                            + Constant.COLUMN_URL + ")VALUES(\""
-                            + mWechat.getTitle() + "\",\""
-                            + mWechat.getUrl() + "\");";
-                    database_new.execSQL(sql_insert);
-                    Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
+                    ContentValues mValues = new ContentValues();
+                    mValues.put(Constant.COLUMN_TITLE, mWechat.getTitle());
+                    mValues.put(Constant.COLUMN_URL, mWechat.getUrl());
+                    long count = database_new.insert(Constant.TABLE_WECHAT, null, mValues);
+                    mValues.clear();
+//                    String sql_insert = "INSERT INTO " + Constant.TABLE_WECHAT + "("
+//                            + Constant.COLUMN_TITLE + ","
+//                            + Constant.COLUMN_URL + ")VALUES(\""
+//                            + mWechat.getTitle() + "\",\""
+//                            + mWechat.getUrl() + "\");";
+//                    database_new.execSQL(sql_insert);
+                    if (count > 0) {
+                        Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        Snackbar.make(view, "收藏失败!", Snackbar.LENGTH_SHORT).show();
+                    }
                 } else {
                     Snackbar.make(view, "已经收藏啦，可以前往收藏夹查看", Snackbar.LENGTH_SHORT).show();
                 }
