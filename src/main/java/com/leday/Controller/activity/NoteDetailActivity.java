@@ -1,6 +1,5 @@
 package com.leday.Controller.activity;
 
-import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,9 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 
 import com.leday.Common.Constant;
@@ -32,9 +28,8 @@ import java.util.Date;
  */
 public class NoteDetailActivity extends AppCompatActivity {
 
-    private EditText mTitle, mContent;
-    private Button mBtnTime;
-    private String local_content, local_title, local_date, local_style;
+    private EditText mContent;
+    private String local_title, local_content, local_date, local_style;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,17 +48,11 @@ public class NoteDetailActivity extends AppCompatActivity {
 
     private void initView() {
         local_style = (String) PreferenUtil.get(this, "note_style", "violet");
-        local_title = getIntent().getStringExtra("local_title");
         local_date = getIntent().getStringExtra("local_date");
         local_content = getIntent().getStringExtra("local_content");
-        mTitle = (EditText) findViewById(R.id.edt_notedetial_title);
         mContent = (EditText) findViewById(R.id.edt_notedetial_content);
-        mBtnTime = (Button) findViewById(R.id.btn_notedetial_time);
 
-        if (!TextUtils.isEmpty(local_title)) {
-            mTitle.setText(local_title);
-            mContent.setText(local_content);
-        }
+        mContent.setText(local_content);
         //设置便签风格
         if (local_style.equals("violet")) {
             PreferenUtil.put(this, "note_style", "violet");
@@ -79,29 +68,6 @@ public class NoteDetailActivity extends AppCompatActivity {
     }
 
     /**
-     * 时间选择器
-     */
-    public void doTimePick(View view) {
-        new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                mBtnTime.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
-            }
-        }, 2018, 8, 8).show();
-    }
-
-    /**
-     * 跳往图灵
-     */
-    public void doAsk(View view) {
-        startActivity(new Intent(this, TalkActivity.class));
-    }
-
-    public void doBack(View view) {
-        finish();
-    }
-
-    /**
      * 提交保存标签
      */
     public void doSubmit() {
@@ -110,16 +76,13 @@ public class NoteDetailActivity extends AppCompatActivity {
             ToastUtil.showMessage(this, "便签内容不能为空");
             return;
         }
-        local_title = mTitle.getText().toString();
-        if (TextUtils.isEmpty(local_title)) {
-            if (local_content.length() < 20) {
-                local_title = local_content;
-            } else {
-                local_title = local_content.substring(0, 20) + "...";
-            }
+        if (local_content.length() < 20) {
+            local_title = local_content;
+        } else {
+            local_title = local_content.substring(0, 20) + "...";
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        local_date = mBtnTime.getText().toString().equals("修改时间") ? sdf.format(new Date()) : mBtnTime.getText().toString();
+        local_date = sdf.format(new Date(System.currentTimeMillis()));
         SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
         mDatabase.execSQL("create table if not exists "
                 + Constant.TABLE_NOTE + "("
@@ -147,7 +110,20 @@ public class NoteDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                //TODO 参考小米便签的返回
+                if (TextUtils.isEmpty(local_content)) {
+                    finish();
+                    break;
+                }
+                if (TextUtils.isEmpty(local_date))
+                    doSubmit();
                 finish();
+                break;
+            case R.id.robot:
+                startActivity(new Intent(this, TalkActivity.class));
+                break;
+            case R.id.list:
+                startActivity(new Intent(this, NoteActivity.class));
                 break;
             case R.id.submit:
                 doSubmit();
