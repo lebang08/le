@@ -72,7 +72,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
 
         mContent = (TextView) findViewById(R.id.content_activity_today);
         TextView mTitle = (TextView) findViewById(R.id.txt_Today_title);
-        TextView mLike = (TextView) findViewById(R.id.txt_Today_like);
+        ImageView mLike = (ImageView) findViewById(R.id.img_today_like);
         ImageView mImgBack = (ImageView) findViewById(R.id.img_today_back);
         banner = (Banner) findViewById(R.id.banner_activity_today);
 
@@ -129,45 +129,23 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.txt_Today_like:
-                //建一张表保存文章
-//                SQLiteDatabase mDatabase = openOrCreateDatabase("leday.db", MODE_PRIVATE, null);
-//                mDatabase.execSQL("create table if not exists todaytb(_id integer primary key autoincrement,date text not null,title text not null,content text not null)");
-//                ContentValues mValues = new ContentValues();
-//                mValues.put("date", mToday.getDate());
-//                mValues.put("title", mToday.getTitle());
-//                mValues.put("content", local_content);
-//                mDatabase.insert("todaytb", null, mValues);
-//                mValues.clear();
-//                mDatabase.close();
-//                //权宜之计，做个标识给FavoriteActivity用
-//                PreferenUtil.put(TodayActivity.this, "todaytb_is_exist", "actually_not");
-
-                /**新的数据库*/
-                SQLiteDatabase database_new = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+            case R.id.img_today_like:
+                SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
                 String sql_create = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
                         + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
                         + Constant.COLUMN_DATE + " text,"
                         + Constant.COLUMN_TITLE + " text, "
                         + Constant.COLUMN_CONTENT + " text)";
-                database_new.execSQL(sql_create);
+                mDatabase.execSQL(sql_create);
                 String sql_select = "SELECT * FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_DATE + " =? AND " + Constant.COLUMN_TITLE + " =?";
-                String isNone = DbUtil.cursorToNotNullString(database_new.rawQuery(sql_select, new String[]{mToday.getDate(), mToday.getTitle()}));
+                String isNone = DbUtil.cursorToNotNullString(mDatabase.rawQuery(sql_select, new String[]{mToday.getDate(), mToday.getTitle()}));
                 if (TextUtils.equals(isNone, Constant.NONE)) {
                     ContentValues mValues = new ContentValues();
                     mValues.put(Constant.COLUMN_DATE, mToday.getDate());
                     mValues.put(Constant.COLUMN_TITLE, mToday.getTitle());
                     mValues.put(Constant.COLUMN_CONTENT, local_content);
-                    long count = database_new.insert(Constant.TABLE_TODAY, null, mValues);
+                    long count = mDatabase.insert(Constant.TABLE_TODAY, null, mValues);
                     mValues.clear();
-//                    String sql_insert = "INSERT INTO " + Constant.TABLE_TODAY + "("
-//                            + Constant.COLUMN_DATE + ","
-//                            + Constant.COLUMN_TITLE + ","
-//                            + Constant.COLUMN_CONTENT + ")VALUES(\""
-//                            + StringUtil.transferString(mToday.getDate()) + "\",\""
-//                            + StringUtil.transferString(mToday.getTitle()) + "\",\""
-//                            + StringUtil.transferString(local_content) + "\");";
-//                    database_new.execSQL(sql_insert);
                     if (count > 0)
                         Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
                     else
@@ -175,7 +153,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
                 } else {
                     Snackbar.make(view, "已经收藏啦，可以前往收藏夹查看", Snackbar.LENGTH_SHORT).show();
                 }
-                database_new.close();
+                mDatabase.close();
                 break;
             case R.id.img_today_back:
                 finish();

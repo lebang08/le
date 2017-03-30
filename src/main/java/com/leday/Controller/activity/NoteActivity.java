@@ -5,9 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.TextUtils;
@@ -110,27 +108,21 @@ public class NoteActivity extends BaseActivity implements XRecyclerView.LoadingL
      * 修改便签风格
      */
     public void doWrite(View view) {
-        Snackbar.make(view, "修改便签底色风格", Snackbar.LENGTH_SHORT)
-                .setActionTextColor(Color.parseColor("#3f51b5"))
-                .setAction("确定", new View.OnClickListener() {
+        new AlertDialog.Builder(NoteActivity.this)
+                .setTitle("切换便签风格")
+                .setMessage("请选择便签风格")
+                .setPositiveButton("默认", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(View v) {
-                        new AlertDialog.Builder(NoteActivity.this)
-                                .setTitle("选择便签风格")
-                                .setPositiveButton("默认", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        PreferenUtil.put(NoteActivity.this, "note_style", "violet");
-                                        startActivity(new Intent(NoteActivity.this, NoteDetailActivity.class));
-                                    }
-                                })
-                                .setNegativeButton("经典", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        PreferenUtil.put(NoteActivity.this, "note_style", "white");
-                                        startActivity(new Intent(NoteActivity.this, NoteDetailActivity.class));
-                                    }
-                                }).show();
+                    public void onClick(DialogInterface dialog, int which) {
+                        PreferenUtil.put(NoteActivity.this, "note_style", "violet");
+                        startActivity(new Intent(NoteActivity.this, NoteDetailActivity.class));
+                    }
+                })
+                .setNegativeButton("经典", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        PreferenUtil.put(NoteActivity.this, "note_style", "white");
+                        startActivity(new Intent(NoteActivity.this, NoteDetailActivity.class));
                     }
                 }).show();
     }

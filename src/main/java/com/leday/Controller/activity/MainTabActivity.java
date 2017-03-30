@@ -186,7 +186,6 @@ public class MainTabActivity extends BaseActivity implements View.OnClickListene
     private Talk mTalk;
 
     private void transferDatabase(boolean need_transfer) {
-        //TODO 拿出自己的数据库,通过PreferenceUtil或者文件是否存在判断是否需要转移
         if (!need_transfer) {
             return;
         }

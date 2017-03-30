@@ -19,7 +19,7 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:text="what"
+            android:text="微信微选收藏"
             android:textColor="#ffffff"
             android:textSize="18sp" />
 
@@ -32,14 +32,13 @@
             android:onClick="close"
             android:src="@drawable/arrow_white_back" />
 
-        <TextView
-            android:id="@+id/txt_webviewdetail_like"
+        <ImageView
+            android:id="@+id/img_webview_detail_unlike"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
             android:layout_marginRight="8dp"
-            android:text="取消收藏"
-            android:textColor="#ffffff" />
+            android:background="@mipmap/icon_star_cancel" />
     </FrameLayout>
 
     <TextView

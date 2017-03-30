@@ -40,7 +40,7 @@ public class WebFavoriteDetailActivity extends BaseActivity implements View.OnCl
         ImageView mBack = (ImageView) findViewById(R.id.img_webviewdetail_back);
         TextView mTitle = (TextView) findViewById(R.id.txt_webviewdetail_title);
         TextView mUrl = (TextView) findViewById(R.id.txt_webviewdetail_url);
-        TextView mUnLike = (TextView) findViewById(R.id.txt_webviewdetail_like);
+        ImageView mUnLike = (ImageView) findViewById(R.id.img_webview_detail_unlike);
         mWebView = (WebView) findViewById(R.id.webviewdetail_activity);
 
         mTitle.setText(mWebView.getTitle());
@@ -78,7 +78,7 @@ public class WebFavoriteDetailActivity extends BaseActivity implements View.OnCl
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.txt_webviewdetail_like:
+            case R.id.img_webview_detail_unlike:
                 Snackbar.make(view, "取消收藏成功", Snackbar.LENGTH_SHORT).show();
                 String local_delete = "DELETE FROM " + Constant.TABLE_WECHAT + " WHERE " + Constant.COLUMN_ID + " = \"" + mWechat.getId() + "\"";
                 SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();

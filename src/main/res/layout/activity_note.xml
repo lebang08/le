@@ -40,7 +40,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical|right"
             android:layout_marginRight="8dp"
-            android:background="@drawable/img_submit"
+            android:background="@mipmap/icon_tool"
             android:onClick="doWrite" />
     </FrameLayout>
 

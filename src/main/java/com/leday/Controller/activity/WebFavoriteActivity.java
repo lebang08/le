@@ -30,11 +30,16 @@ public class WebFavoriteActivity extends BaseActivity implements AdapterView.OnI
     private ArrayAdapter mAdapter;
 
     private ArrayList<Wechat> mWechatList = new ArrayList<>();
+    private ArrayList<String> mTitleList = new ArrayList<>();
 
     @Override
     protected void onRestart() {
         mWechatList.clear();
+        mTitleList.clear();
         queryDatabase();
+        for (int i = 0; i < mWechatList.size(); i++) {
+            mTitleList.add(mWechatList.get(i).getTitle());
+        }
         mAdapter.notifyDataSetChanged();
         super.onRestart();
     }
@@ -51,7 +56,7 @@ public class WebFavoriteActivity extends BaseActivity implements AdapterView.OnI
         mListView = (ListView) findViewById(R.id.listview_activity_favoriter);
         //数据
         queryDatabase();
-        ArrayList<String> mTitleList = new ArrayList();
+        mTitleList = new ArrayList();
         for (int i = 0; i < mWechatList.size(); i++) {
             mTitleList.add(mWechatList.get(i).getTitle());
         }

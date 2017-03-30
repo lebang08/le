@@ -32,14 +32,13 @@
             android:onClick="close"
             android:src="@drawable/arrow_white_back" />
 
-        <TextView
-            android:id="@+id/txt_webview_like"
+        <ImageView
+            android:id="@+id/img_webview_like"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
             android:layout_marginRight="8dp"
-            android:text="收藏"
-            android:textColor="#ffffff" />
+            android:background="@mipmap/icon_star" />
     </FrameLayout>
 
     <WebView

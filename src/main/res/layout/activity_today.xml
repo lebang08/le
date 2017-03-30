@@ -30,13 +30,13 @@
             android:layout_marginLeft="8dp"
             android:src="@drawable/arrow_white_back" />
 
-        <TextView
-            android:id="@+id/txt_Today_like"
+        <ImageView
+            android:id="@+id/img_today_like"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|right"
             android:layout_marginRight="8dp"
-            android:text="收藏"
+            android:background="@mipmap/icon_star"
             android:textColor="#ffffff" />
     </FrameLayout>
 

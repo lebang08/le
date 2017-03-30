@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/robot"
-        android:icon="@drawable/img_submit"
-        android:title="submit"
+        android:icon="@mipmap/icon_robot"
+        android:title="robot"
         app:showAsAction="always" />
     <item
         android:id="@+id/list"
-        android:icon="@drawable/img_submit"
-        android:title="submit"
+        android:icon="@mipmap/icon_list"
+        android:title="list"
         app:showAsAction="always" />
     <item
         android:id="@+id/submit"
-        android:icon="@drawable/img_submit"
-        android:title="submit"
+        android:icon="@mipmap/icon_submit"
+        android:title="save file"
         app:showAsAction="always" />
 </menu>
