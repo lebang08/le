@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.leday.BaseFragment;
+import com.leday.Controller.activity.NoteDetailActivity;
 import com.leday.View.ListViewHightHelper;
 import com.leday.R;
 import com.leday.Controller.activity.NoteActivity;
@@ -117,6 +118,6 @@ public class FragmentStar extends BaseFragment implements AdapterView.OnItemClic
 
     @Override
     public void onClick(View v) {
-        startActivity(new Intent(getActivity(),NoteActivity.class));
+        startActivity(new Intent(getActivity(),NoteDetailActivity.class));
     }
 }

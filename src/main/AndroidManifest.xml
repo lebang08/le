@@ -45,8 +45,9 @@
         <activity android:name=".Controller.activity.TodayFavoriteDetailActivity" />
         <activity android:name=".Controller.activity.WebFavoriteDetailActivity" />
         <activity android:name=".Controller.activity.NoteActivity" />
-        <activity android:name=".Controller.activity.NoteDetailActivity" />
-        <!-- <activity android:name=".activity.Note_Activity" /> -->
+        <activity
+            android:name=".Controller.activity.NoteDetailActivity"
+            android:launchMode="singleTask" />
 
         <service
             android:name=".Controller.Service.UpdateService"

@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import com.leday.BaseFragment;
 import com.leday.Common.Constant;
+import com.leday.Controller.activity.NoteDetailActivity;
 import com.leday.R;
 import com.leday.Controller.activity.NoteActivity;
 import com.leday.Controller.activity.TodayActivity;
@@ -127,6 +128,6 @@ public class FragmentToday extends BaseFragment implements AdapterView.OnItemCli
 
     @Override
     public void onClick(View v) {
-        startActivity(new Intent(getActivity(), NoteActivity.class));
+        startActivity(new Intent(getActivity(), NoteDetailActivity.class));
     }
 }
