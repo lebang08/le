@@ -25,11 +25,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.leday.R;
 import com.leday.Model.UpdateInfo;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.FileCallback;
-import com.lzy.okgo.callback.StringCallback;
+import com.leday.R;
+import com.leday.Util.Interface.DownLoadInterface;
+import com.leday.Util.Interface.HttpInterface;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -91,17 +90,11 @@ public class UpdateUtil {
     };
 
     public void checkUpdate() {
-        OkGo.get(URL_SERVE).execute(new StringCallback() {
+        HttpUtil.getRequest(URL_SERVE, null, new HttpInterface() {
             @Override
-            public void onSuccess(String s, Call call, okhttp3.Response response) {
-                doSuccess(s);
+            public void onSuccess(String result, Call call, Response response) {
+                doSuccess(result);
                 LogUtil.i("service do update");
-            }
-
-            @Override
-            public void onError(Call call, okhttp3.Response response, Exception e) {
-                super.onError(call, response, e);
-                LogUtil.i("error =  update");
             }
         });
     }
@@ -226,33 +219,30 @@ public class UpdateUtil {
 
     //文件下载的操作(1.存储卡/2.输入流)
     private void downloadAPK() {
-        OkGo.get(updateInfo.getApkurl())
-                .execute(new FileCallback() {
-                    @Override
-                    public void onSuccess(File file, Call call, Response response) {
-                        LogUtil.i("file = " + file.toString());
-                        mSavePath = file.toString();
-                        mDownLoadDialog.dismiss();
-                        installAPK(file);
-                    }
+        HttpUtil.downlodaRequest(updateInfo.getApkurl(), new DownLoadInterface() {
+            @Override
+            public void onSuccess(File file, Call call, Response response) {
+                mSavePath = file.toString();
+                mDownLoadDialog.dismiss();
+                installAPK(file);
+            }
 
-                    @Override
-                    public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
-                        super.downloadProgress(currentSize, totalSize, progress, networkSpeed);
-                        mProgress = (int) (((float) currentSize / totalSize) * 100);
-                        // 更新进度条
-                        Message msg = new Message();
-                        msg.what = DOWNLOADING;
-                        msg.obj = mProgress;
-                        mUpdateProgressHandler.sendMessageDelayed(msg, 500);
-                        // 下载完成
-                        if (mProgress >= 100) {
-                            mUpdateProgressHandler.sendEmptyMessage(DOWNLOAD_FINISH);
-                        }
-                        LogUtil.i("progress = " + progress + "====" + currentSize + "/" + totalSize + "||networkSpeed = " + networkSpeed);
-                    }
-                });
+            @Override
+            public void onProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+                mProgress = (int) (((float) currentSize / totalSize) * 100);
+                // 更新进度条
+                Message msg = new Message();
+                msg.what = DOWNLOADING;
+                msg.obj = mProgress;
+                mUpdateProgressHandler.sendMessageDelayed(msg, 500);
+                // 下载完成
+                if (mProgress >= 100) {
+                    mUpdateProgressHandler.sendEmptyMessage(DOWNLOAD_FINISH);
+                }
+                LogUtil.i("progress = " + progress + "====" + currentSize + "/" + totalSize + "||networkSpeed = " + networkSpeed);
 
+            }
+        });
 //        new Thread(new Runnable() {
 //            public void run() {
 //                try {

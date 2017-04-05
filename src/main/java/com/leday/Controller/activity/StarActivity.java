@@ -10,11 +10,9 @@ import android.widget.TextView;
 import com.leday.BaseActivity;
 import com.leday.Common.Constant;
 import com.leday.R;
-import com.leday.Util.LogUtil;
+import com.leday.Util.HttpUtil;
+import com.leday.Util.Interface.HttpInterface;
 import com.leday.Util.ToastUtil;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.cache.CacheMode;
-import com.lzy.okgo.callback.StringCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +33,7 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onStop() {
         super.onStop();
-        OkGo.getInstance().cancelTag(Tag_STAR_ACTIVITY);
+        HttpUtil.removeTag(Tag_STAR_ACTIVITY);
     }
 
     @Override
@@ -124,18 +122,13 @@ public class StarActivity extends BaseActivity implements View.OnClickListener {
 
     private void getJson() {
         progressdialogShow(this);
-        OkGo.get(Constant.URL_STAR + localstar + "&type=" + localtime)
-                .tag(Tag_STAR_ACTIVITY)
-                .cacheKey("cacheKey")            // 设置当前请求的缓存key,建议每个不同功能的请求设置一个
-                .cacheMode(CacheMode.DEFAULT)    // 缓存模式，详细请看缓存介绍
-                .execute(new StringCallback() {
-                    @Override
-                    public void onSuccess(String s, Call call, Response response) {
-                        LogUtil.i("succ = " + s);
-                        DoSuccess(s);
-                        progressCancel();
-                    }
-                });
+        HttpUtil.getRequest(Constant.URL_STAR + localstar + "&type=" + localtime, Tag_STAR_ACTIVITY, new HttpInterface() {
+            @Override
+            public void onSuccess(String result, Call call, Response response) {
+                DoSuccess(result);
+                progressCancel();
+            }
+        });
     }
 
     private void DoSuccess(String response) {

@@ -44,10 +44,12 @@
         <activity android:name=".Controller.activity.WebFavoriteActivity" />
         <activity android:name=".Controller.activity.TodayFavoriteDetailActivity" />
         <activity android:name=".Controller.activity.WebFavoriteDetailActivity" />
-        <activity android:name=".Controller.activity.NoteActivity" />
+        <activity
+            android:name=".Controller.activity.NoteActivity"
+            android:launchMode="singleTask" />
         <activity
             android:name=".Controller.activity.NoteDetailActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTop" />
 
         <service
             android:name=".Controller.Service.UpdateService"

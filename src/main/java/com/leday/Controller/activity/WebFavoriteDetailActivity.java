@@ -29,7 +29,7 @@ public class WebFavoriteDetailActivity extends BaseActivity implements View.OnCl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_webviewdetail);
+        setContentView(R.layout.activity_webview_detail);
 
         initView();
         initEvent();

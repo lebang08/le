@@ -13,14 +13,14 @@ import android.widget.ListView;
 import com.leday.BaseFragment;
 import com.leday.Common.Constant;
 import com.leday.Controller.activity.NoteDetailActivity;
-import com.leday.R;
-import com.leday.Controller.activity.NoteActivity;
 import com.leday.Controller.activity.TodayActivity;
+import com.leday.Model.Today;
+import com.leday.R;
+import com.leday.Util.HttpUtil;
+import com.leday.Util.Interface.HttpInterface;
 import com.leday.Util.LogUtil;
 import com.leday.View.ListViewHightHelper;
-import com.leday.Model.Today;
 import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,7 +48,7 @@ public class FragmentToday extends BaseFragment implements AdapterView.OnItemCli
     @Override
     public void onStop() {
         super.onStop();
-        OkGo.getInstance().cancelTag(TAG_FRAGMENT_A);
+        HttpUtil.removeTag(TAG_FRAGMENT_A);
     }
 
     @Override
@@ -74,15 +74,13 @@ public class FragmentToday extends BaseFragment implements AdapterView.OnItemCli
         int localMonth = mCalendar.get(Calendar.MONTH);
         int localDay = mCalendar.get(Calendar.DAY_OF_MONTH);
         //请求网络
-        OkGo.get(Constant.URL_TODAY + (localMonth + 1) + "/" + localDay)
-                .tag(TAG_FRAGMENT_A)
-                .execute(new StringCallback() {
-                    @Override
-                    public void onSuccess(String s, Call call, Response response) {
-                        Dosuccess(s);
-                        progressCancel();
-                    }
-                });
+        HttpUtil.getRequest(Constant.URL_TODAY + (localMonth + 1) + "/" + localDay, TAG_FRAGMENT_A, new HttpInterface() {
+            @Override
+            public void onSuccess(String result, Call call, Response response) {
+                Dosuccess(result);
+                progressCancel();
+            }
+        });
     }
 
     /**

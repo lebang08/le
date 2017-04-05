@@ -20,11 +20,10 @@ import com.leday.Model.Talk;
 import com.leday.R;
 import com.leday.Util.DbHelper;
 import com.leday.Util.DbUtil;
-import com.leday.Util.PreferenUtil;
+import com.leday.Util.HttpUtil;
 import com.leday.Util.SDCardUtil;
 import com.leday.Util.TalkHttpUtils;
 import com.leday.Util.ToastUtil;
-import com.lzy.okgo.OkGo;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -67,7 +66,7 @@ public class TalkActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        OkGo.getInstance().cancelTag("GET");
+        HttpUtil.removeTag("GET");
     }
 
     @Override
@@ -153,8 +152,6 @@ public class TalkActivity extends BaseActivity {
                 toMessage.setType(Talk.Type.OUTCOMING);
                 toMessage.setMsg(toMsg);
                 // 这里将发送的数据放入数据库
-                PreferenUtil.put(TalkActivity.this, "mDatabase", "exist");
-
                 SQLiteDatabase mDatabase = new DbHelper(TalkActivity.this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
                 mDatabase.execSQL("create table if not exists " + Constant.TABLE_TALK + "(" + Constant.COLUMN_ID + " integer primary key autoincrement,"
                         + Constant.COLUMN_MESSAGE + " text,"

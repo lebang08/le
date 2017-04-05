@@ -9,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.leday.R;
 import com.leday.Controller.activity.NoteDetailActivity;
 import com.leday.Model.Note;
+import com.leday.R;
 
 import java.util.ArrayList;
 
@@ -44,6 +44,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
                 intent.putExtra("local_date", mList.get(position).getTime());
                 intent.putExtra("local_title", mList.get(position).getTitle());
                 intent.putExtra("local_content", mList.get(position).getContent());
+                intent.putExtra("from_note_list", true);
                 mContext.startActivity(intent);
             }
         });

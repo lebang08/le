@@ -30,11 +30,14 @@ public class NoteDetailActivity extends AppCompatActivity {
 
     private EditText mContent;
     private String local_title, local_content, local_date, local_style;
+    private boolean isFromNoteList;
 
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notedetail);
+        isFromNoteList = getIntent().getBooleanExtra("from_note_list", false);
+        setContentView(R.layout.activity_note_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_activity_notedetail);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -102,7 +105,10 @@ public class NoteDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar, menu);
+        if (isFromNoteList)
+            getMenuInflater().inflate(R.menu.toolbar_note_from_table, menu);
+        else
+            getMenuInflater().inflate(R.menu.toolbar_note_from_other, menu);
         return true;
     }
 
@@ -110,7 +116,6 @@ public class NoteDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                //TODO 参考小米便签的返回
                 if (TextUtils.isEmpty(local_content)) {
                     finish();
                     break;

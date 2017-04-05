@@ -13,12 +13,12 @@ import android.view.WindowManager;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leday.BaseFragment;
 import com.leday.Common.Constant;
-import com.leday.R;
 import com.leday.Controller.adapter.WechatAdapter;
-import com.leday.Util.LogUtil;
 import com.leday.Model.Wechat;
-import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
+import com.leday.R;
+import com.leday.Util.HttpUtil;
+import com.leday.Util.Interface.HttpInterface;
+import com.leday.Util.LogUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,7 +61,7 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
     @Override
     public void onStop() {
         super.onStop();
-        OkGo.getInstance().cancelTag(TAG_FRAGMENT_C);
+        HttpUtil.removeTag(TAG_FRAGMENT_C);
     }
 
     @Override
@@ -101,14 +101,12 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
      * 请求数据
      */
     private void requestData(final int code) {
-        OkGo.get(Constant.URL_WECHAT + "&pno=" + page_num)
-                .tag(TAG_FRAGMENT_C)
-                .execute(new StringCallback() {
-                    @Override
-                    public void onSuccess(String s, Call call, Response response) {
-                        Dosuccess(s, code);
-                    }
-                });
+        HttpUtil.getRequest(Constant.URL_WECHAT + "&pno=" + page_num, TAG_FRAGMENT_C, new HttpInterface() {
+            @Override
+            public void onSuccess(String result, Call call, Response response) {
+                Dosuccess(result, code);
+            }
+        });
     }
 
     /**
