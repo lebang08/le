@@ -1,6 +1,7 @@
 package com.leday.Model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/6/8
@@ -11,6 +12,7 @@ public class Today implements Serializable {
     private String e_id;
     private String title;
     private String content;
+    public ArrayList<String> imageList;
 
     public Today() {
     }

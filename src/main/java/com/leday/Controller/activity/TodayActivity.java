@@ -30,6 +30,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 import okhttp3.Call;
 
 public class TodayActivity extends BaseActivity implements View.OnClickListener {
@@ -62,6 +64,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_today);
 
+        ShareSDK.initSDK(this);
         initView();
         getJson();
     }
@@ -73,10 +76,12 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
         mContent = (TextView) findViewById(R.id.content_activity_today);
         TextView mTitle = (TextView) findViewById(R.id.txt_Today_title);
         ImageView mLike = (ImageView) findViewById(R.id.img_today_like);
+        ImageView mShare = (ImageView) findViewById(R.id.img_today_share);
         ImageView mImgBack = (ImageView) findViewById(R.id.img_today_back);
         banner = (Banner) findViewById(R.id.banner_activity_today);
 
         mLike.setOnClickListener(this);
+        mShare.setOnClickListener(this);
         mImgBack.setOnClickListener(this);
         mTitle.setText(mToday.getTitle());
     }
@@ -111,6 +116,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
                 String imgurl = obj.getString("url");
                 imgList.add(imgurl);
             }
+            mToday.imageList = imgList;
             //设置图片加载器
             banner.setImageLoader(new GlideImageLoader());
             //设置图片集合
@@ -126,34 +132,51 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
+    private void share() {
+        OnekeyShare oks = new OnekeyShare();
+        oks.setTitle(mToday.getTitle());
+//        oks.setTitleUrl("http://sj.qq.com/myapp/detail.htm?apkName=com.leday");
+        oks.setText(local_content.substring(0, 15) + "...");
+        if (mToday.imageList.size() > 0)
+            oks.setImageUrl(mToday.imageList.get(0));
+        oks.show(this);
+    }
+
+    private void doLike(View view) {
+        SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
+        String sql_create = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
+                + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
+                + Constant.COLUMN_DATE + " text,"
+                + Constant.COLUMN_TITLE + " text, "
+                + Constant.COLUMN_CONTENT + " text)";
+        mDatabase.execSQL(sql_create);
+        String sql_select = "SELECT * FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_DATE + " =? AND " + Constant.COLUMN_TITLE + " =?";
+        String isNone = DbUtil.cursorToNotNullString(mDatabase.rawQuery(sql_select, new String[]{mToday.getDate(), mToday.getTitle()}));
+        if (TextUtils.equals(isNone, Constant.NONE)) {
+            ContentValues mValues = new ContentValues();
+            mValues.put(Constant.COLUMN_DATE, mToday.getDate());
+            mValues.put(Constant.COLUMN_TITLE, mToday.getTitle());
+            mValues.put(Constant.COLUMN_CONTENT, local_content);
+            long count = mDatabase.insert(Constant.TABLE_TODAY, null, mValues);
+            mValues.clear();
+            if (count > 0)
+                Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
+            else
+                Snackbar.make(view, "收藏失败!", Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(view, "已经收藏啦，可以前往收藏夹查看", Snackbar.LENGTH_SHORT).show();
+        }
+        mDatabase.close();
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.img_today_like:
-                SQLiteDatabase mDatabase = new DbHelper(this, SDCardUtil.getSDCardPath() + Constant.DATABASE_LEBANG).getWritableDatabase();
-                String sql_create = "CREATE TABLE IF NOT EXISTS " + Constant.TABLE_TODAY + "("
-                        + Constant.COLUMN_ID + " integer PRIMARY KEY AUTOINCREMENT,"
-                        + Constant.COLUMN_DATE + " text,"
-                        + Constant.COLUMN_TITLE + " text, "
-                        + Constant.COLUMN_CONTENT + " text)";
-                mDatabase.execSQL(sql_create);
-                String sql_select = "SELECT * FROM " + Constant.TABLE_TODAY + " WHERE " + Constant.COLUMN_DATE + " =? AND " + Constant.COLUMN_TITLE + " =?";
-                String isNone = DbUtil.cursorToNotNullString(mDatabase.rawQuery(sql_select, new String[]{mToday.getDate(), mToday.getTitle()}));
-                if (TextUtils.equals(isNone, Constant.NONE)) {
-                    ContentValues mValues = new ContentValues();
-                    mValues.put(Constant.COLUMN_DATE, mToday.getDate());
-                    mValues.put(Constant.COLUMN_TITLE, mToday.getTitle());
-                    mValues.put(Constant.COLUMN_CONTENT, local_content);
-                    long count = mDatabase.insert(Constant.TABLE_TODAY, null, mValues);
-                    mValues.clear();
-                    if (count > 0)
-                        Snackbar.make(view, "收藏成功!", Snackbar.LENGTH_SHORT).show();
-                    else
-                        Snackbar.make(view, "收藏失败!", Snackbar.LENGTH_SHORT).show();
-                } else {
-                    Snackbar.make(view, "已经收藏啦，可以前往收藏夹查看", Snackbar.LENGTH_SHORT).show();
-                }
-                mDatabase.close();
+                doLike(view);
+                break;
+            case R.id.img_today_share:
+                share();
                 break;
             case R.id.img_today_back:
                 finish();

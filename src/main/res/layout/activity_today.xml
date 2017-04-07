@@ -4,18 +4,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="#3f51b5">
+        android:background="@color/colorPrimary">
 
         <TextView
             android:id="@+id/txt_Today_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="64dp"
-            android:layout_marginRight="64dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="24dp"
+            android:layout_toLeftOf="@+id/img_today_share"
+            android:layout_toRightOf="@+id/img_today_back"
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
@@ -26,24 +27,36 @@
             android:id="@+id/img_today_back"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="8dp"
             android:src="@drawable/arrow_white_back" />
+
+        <ImageView
+            android:id="@+id/img_today_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="8dp"
+            android:layout_toLeftOf="@+id/img_today_like"
+            android:background="@mipmap/icon_share"
+            android:textColor="#ffffff" />
 
         <ImageView
             android:id="@+id/img_today_like"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:layout_marginRight="8dp"
             android:background="@mipmap/icon_star"
             android:textColor="#ffffff" />
-    </FrameLayout>
+
+    </RelativeLayout>
 
     <com.youth.banner.Banner
         android:id="@+id/banner_activity_today"
         android:layout_width="match_parent"
-        android:layout_height="160dp" />
+        android:layout_height="180dp" />
 
     <ScrollView
         android:layout_width="match_parent"
