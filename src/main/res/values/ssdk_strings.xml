@@ -77,9 +77,9 @@
 	<string name="ssdk_share_to_googleplus">分享到Google+</string>
 	<string name="ssdk_share_to_qzone_default">来自%s的分享</string>
 	<string name="ssdk_use_login_button">请改用“登录”按钮</string>
-	<!--<string name="ssdk_share_to_youtube">分享到Youtube</string>-->
+	<string name="ssdk_share_to_youtube">分享到Youtube</string>
 	
-	<!--<string name="ssdk_gender_male">男</string>-->
-	<!--<string name="ssdk_gender_female">女</string>-->
-	<!--<string name="ssdk_symbol_ellipsis">...</string>-->
+	<string name="ssdk_gender_male">男</string>
+	<string name="ssdk_gender_female">女</string>
+	<string name="ssdk_symbol_ellipsis">...</string>
 </resources>

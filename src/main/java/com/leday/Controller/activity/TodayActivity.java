@@ -17,9 +17,10 @@ import com.leday.R;
 import com.leday.Util.DbHelper;
 import com.leday.Util.DbUtil;
 import com.leday.Util.GlideImageLoader;
+import com.leday.Util.HttpUtil;
+import com.leday.Util.Interface.HttpInterface;
 import com.leday.Util.SDCardUtil;
 import com.lzy.okgo.OkGo;
-import com.lzy.okgo.callback.StringCallback;
 import com.youth.banner.Banner;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 import okhttp3.Call;
+import okhttp3.Response;
 
 public class TodayActivity extends BaseActivity implements View.OnClickListener {
 
@@ -88,14 +90,13 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
 
     private void getJson() {
         progressdialogShow(this);
-        OkGo.get(URL_TODAY + mToday.getE_id()).tag("todayactivity")
-                .execute(new StringCallback() {
-                    @Override
-                    public void onSuccess(String s, Call call, okhttp3.Response response) {
-                        Dosuccess(s);
-                        progressCancel();
-                    }
-                });
+        HttpUtil.getRequest(URL_TODAY + mToday.getE_id(), "todayactivity", new HttpInterface() {
+            @Override
+            public void onSuccess(String result, Call call, Response response) {
+                Dosuccess(result);
+                progressCancel();
+            }
+        });
     }
 
     private void Dosuccess(String response) {
@@ -135,7 +136,7 @@ public class TodayActivity extends BaseActivity implements View.OnClickListener 
     private void share() {
         OnekeyShare oks = new OnekeyShare();
         oks.setTitle(mToday.getTitle());
-//        oks.setTitleUrl("http://sj.qq.com/myapp/detail.htm?apkName=com.leday");
+        oks.setTitleUrl("http://sj.qq.com/myapp/detail.htm?apkName=com.leday");
         oks.setText(local_content.substring(0, 15) + "...");
         if (mToday.imageList.size() > 0)
             oks.setImageUrl(mToday.imageList.get(0));

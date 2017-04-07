@@ -39,7 +39,8 @@
             android:layout_marginRight="8dp"
             android:layout_toLeftOf="@+id/img_today_like"
             android:background="@mipmap/icon_share"
-            android:textColor="#ffffff" />
+            android:textColor="#ffffff"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/img_today_like"
