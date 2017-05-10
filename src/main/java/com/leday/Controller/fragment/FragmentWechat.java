@@ -14,6 +14,7 @@ import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import com.leday.BaseFragment;
 import com.leday.Common.Constant;
 import com.leday.Controller.adapter.WechatAdapter;
+import com.leday.LazyFragment;
 import com.leday.Model.Wechat;
 import com.leday.R;
 import com.leday.Util.HttpUtil;
@@ -30,7 +31,7 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Response;
 
-public class FragmentWechat extends BaseFragment implements XRecyclerView.LoadingListener {
+public class FragmentWechat extends LazyFragment implements XRecyclerView.LoadingListener {
 
     private XRecyclerView mRecyclerView;
     private WechatAdapter mAdapter;
@@ -40,6 +41,8 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
     private int page_num = 1;
 
     private DisplayMetrics mDisplayMetric;
+
+    private boolean isPrepared;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -69,8 +72,15 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
         View view = inflater.inflate(R.layout.fragment_wechat, container, false);
         initDisplay();
         initView(view);
-        requestData(Constant.REFRESH_DATA);
         return view;
+    }
+
+    @Override
+    protected void lazyLoad() {
+        if (!isPrepared){
+            progressShow(getActivity());
+            requestData(Constant.REFRESH_DATA);
+        }
     }
 
     private void initView(View view) {
@@ -105,6 +115,8 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
             @Override
             public void onSuccess(String result, Call call, Response response) {
                 Dosuccess(result, code);
+                isPrepared = true;
+                progressCancel();
             }
         });
     }
@@ -113,9 +125,9 @@ public class FragmentWechat extends BaseFragment implements XRecyclerView.Loadin
      * 请求成功后对data结果进行处理
      */
     private void Dosuccess(String response, int code) {
-        JSONObject obj;
-        JSONArray arr;
         try {
+            JSONObject obj;
+            JSONArray arr;
             obj = new JSONObject(response);
             obj = obj.getJSONObject("result");
             arr = obj.getJSONArray("list");
